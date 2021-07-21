@@ -6,3 +6,10 @@
  * resolution.
  */
 export * from './alignment';
+export * from './creature-size';
+export * from './currency';
+export * from './die-size';
+export * from './lifestyle';
+export * from './options';
+
+export * from './resource-type';
