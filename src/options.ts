@@ -1,8 +1,7 @@
 // IMPORTANT NOTE: This should be changed over to classes
 import { JSONObject, JSONValue } from './interfaces/json';
 
-import { isPlainObject } from './utils/json-object';
-import { testIfPositiveInteger } from './utils/validation';
+import { isPlainObject, testIfPositiveInteger } from './utils';
 
 /**
  * Provides an alotment of choices that may be

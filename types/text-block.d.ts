@@ -1,7 +1,4 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
-import { StringArray } from './interfaces/arrays';
+import { IAssignable, IValidatable, JSONObject, StringArray } from './interfaces';
 /**
  * Represents a block of text, with different
  * formatting options available.

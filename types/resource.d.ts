@@ -1,6 +1,4 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import { IAssignable, IValidatable, JSONObject } from './interfaces';
 import { ResourceType } from './resource-type';
 import TextBlock from './text-block';
 import Source, { ISource } from './source';

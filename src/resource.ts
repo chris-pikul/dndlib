@@ -1,15 +1,20 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
-import { StringArray } from './interfaces/arrays';
+import {
+  IAssignable,
+  IValidatable,
+  JSONObject,
+  StringArray,
+} from './interfaces';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
 import TextBlock from './text-block';
 import Source, { ISource } from './source';
 
-import { inPlaceConcat } from './utils/arrays';
-import { testURI, testKabob } from './utils/validation';
-import { isPlainObject } from './utils/json-object';
+import {
+  inPlaceConcat,
+  testURI,
+  testKabob,
+  isPlainObject,
+} from './utils';
 
 /**
  * Schema: /resource.schema.json

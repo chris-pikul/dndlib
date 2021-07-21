@@ -1,10 +1,15 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import {
+  IAssignable,
+  IValidatable,
+  JSONObject,
+} from './interfaces';
 
-import { StringEnum, enumHas } from './utils/enums';
-import { isPlainObject } from './utils/json-object';
-import { testIfPositiveInteger } from './utils/validation';
+import {
+  StringEnum,
+  enumHas,
+  isPlainObject,
+  testIfPositiveInteger,
+} from './utils';
 
 /**
  * Enumeration of the standard Publication IDs

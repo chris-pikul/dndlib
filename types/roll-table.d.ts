@@ -1,6 +1,4 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import { IAssignable, IValidatable, JSONObject } from './interfaces';
 import { DieSize } from './die-size';
 import TextBlock from './text-block';
 /**

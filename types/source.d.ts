@@ -1,7 +1,5 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
-import { StringEnum } from './utils/enums';
+import { IAssignable, IValidatable, JSONObject } from './interfaces';
+import { StringEnum } from './utils';
 /**
  * Enumeration of the standard Publication IDs
  */

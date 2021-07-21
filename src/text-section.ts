@@ -1,9 +1,10 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import {
+  IAssignable,
+  IValidatable,
+  JSONObject,
+} from './interfaces';
 
-import { isPlainObject } from './utils/json-object';
-import { inPlaceConcat } from './utils/arrays';
+import { isPlainObject, inPlaceConcat } from './utils';
 
 import TextBlock from './text-block';
 

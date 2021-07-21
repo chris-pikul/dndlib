@@ -1,14 +1,17 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import {
+  IAssignable,
+  IValidatable,
+  JSONObject,
+} from './interfaces';
 
 import { DieSize, dieSizeHas } from './die-size';
 import TextBlock from './text-block';
 
-import { inPlaceConcat } from './utils/arrays';
-import { isPlainObject } from './utils/json-object';
-import { testIfPositiveInteger } from './utils/validation';
-
+import {
+  inPlaceConcat,
+  isPlainObject,
+  testIfPositiveInteger,
+} from './utils';
 
 /**
  * An individual result from a roll-table.

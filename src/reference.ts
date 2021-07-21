@@ -1,11 +1,12 @@
-import { IValidatable } from './interfaces/validatable';
-import { IAssignable } from './interfaces/assignable';
-import { JSONObject } from './interfaces/json';
+import {
+  IValidatable,
+  IAssignable,
+  JSONObject,
+} from './interfaces';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
 
-import { isPlainObject } from './utils/json-object';
-import { testURI } from './utils/validation';
+import { isPlainObject, testURI } from './utils';
 
 /**
  * References are used to link resources between each other

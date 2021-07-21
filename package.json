@@ -5,9 +5,10 @@
   "main": "src/index.ts",
   "scripts": {
     "clean": "rimraf ./lib ./types",
+    "clean:postbuild": "rimraf ./lib/interfaces",
     "lint": "npx eslint ./src --ext .js,.ts",
     "lint:quiet": "npx eslint ./src --quiet --ext .js,.ts",
-    "build": "npm run clean && npm run lint && tsc"
+    "build": "npm run clean && npm run lint && tsc && npm run clean:postbuild"
   },
   "repository": {
     "type": "git",

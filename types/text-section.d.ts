@@ -1,6 +1,4 @@
-import { IAssignable } from './interfaces/assignable';
-import { IValidatable } from './interfaces/validatable';
-import { JSONObject } from './interfaces/json';
+import { IAssignable, IValidatable, JSONObject } from './interfaces';
 import TextBlock from './text-block';
 /**
  * TextSection represents a titled section of text.

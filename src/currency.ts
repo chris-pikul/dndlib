@@ -1,5 +1,8 @@
-import { positive, randomFloat } from './utils/math';
-import { isPlainObject } from './utils/json-object';
+import {
+  positive,
+  randomFloat,
+  isPlainObject,
+} from './utils';
 
 /**
  * Describes the value of something, or a general ammount of monetary
