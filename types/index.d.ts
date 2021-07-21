@@ -13,6 +13,7 @@ export * from './lifestyle';
 export * from './options';
 export * from './reference';
 export * from './resource-type';
+export * from './resource';
 export * from './roll-table';
 export * from './source';
 export * from './text-block';
