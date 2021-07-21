@@ -1,8 +1,10 @@
 import { IValidatable } from './interfaces/validatable';
-import { IAssignable } from './utils/assignable';
-import { isPlainObject, JSONObject } from './utils/json-object';
+import { IAssignable } from './interfaces/assignable';
+import { JSONObject } from './interfaces/json';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
+
+import { isPlainObject } from './utils/json-object';
 import { testURI } from './utils/validation';
 
 /**
