@@ -14,5 +14,6 @@ export * from './options';
 export * from './reference';
 export * from './resource-type';
 export * from './roll-table';
+export * from './source';
 export * from './text-block';
 export * from './text-section';
