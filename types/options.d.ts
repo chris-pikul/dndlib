@@ -1,4 +1,4 @@
-import { JSONObject, JSONValue } from './utils/json-object';
+import { JSONObject, JSONValue } from './interfaces/json';
 /**
  * Provides an alotment of choices that may be
  * chosen from.

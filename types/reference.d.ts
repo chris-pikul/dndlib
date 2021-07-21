@@ -1,6 +1,6 @@
 import { IValidatable } from './interfaces/validatable';
-import { IAssignable } from './utils/assignable';
-import { JSONObject } from './utils/json-object';
+import { IAssignable } from './interfaces/assignable';
+import { JSONObject } from './interfaces/json';
 import { ResourceType } from './resource-type';
 /**
  * References are used to link resources between each other

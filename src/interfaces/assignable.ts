@@ -1,4 +1,4 @@
-import { JSONObject } from '../utils/json-object';
+import { JSONObject } from './json';
 
 /**
  * Says that a class can have it's properties
