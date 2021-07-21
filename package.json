@@ -1,0 +1,39 @@
+{
+  "name": "dndlib",
+  "version": "0.1.0",
+  "description": "TypeScript/JavaScript library and accompanying JSON Schema for Dungeons & Dragons 5th edition",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chris-pikul/dndlib.git"
+  },
+  "keywords": [
+    "dungeons",
+    "dragosn",
+    "fifth",
+    "5e",
+    "typescript",
+    "library",
+    "schema",
+    "json"
+  ],
+  "author": "Chris Pikul <ChrisPikul510@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chris-pikul/dndlib/issues"
+  },
+  "homepage": "https://github.com/chris-pikul/dndlib#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "rimraf": "^3.0.2",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
+}
