@@ -1,3 +1,7 @@
+/*
+ * Copyright(C) 2021 Chris Pikul. Under MIT license. 
+ * See "LICENSE" in the root project folder.
+ */
 // IMPORTANT NOTE: This should be changed over to classes
 import { JSONObject, JSONValue } from './interfaces/json';
 
