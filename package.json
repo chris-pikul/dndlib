@@ -2,9 +2,12 @@
   "name": "dndlib",
   "version": "0.1.0",
   "description": "TypeScript/JavaScript library and accompanying JSON Schema for Dungeons & Dragons 5th edition",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf ./lib ./types",
+    "lint": "npx eslint ./src --ext .js,.ts",
+    "lint:quiet": "npx eslint ./src --quiet --ext .js,.ts",
+    "build": "npm run clean && npm run lint && tsc"
   },
   "repository": {
     "type": "git",
