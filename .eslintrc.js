@@ -9,6 +9,8 @@ module.exports = {
     '@typescript-eslint/no-extra-semi': [ 'off' ],
     '@typescript-eslint/no-explicit-any': [ 'off' ],
     '@typescript-eslint/explicit-module-boundary-types': [ 'warn', { allowArgumentsExplicitlyTypedAsAny: true } ],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': [ 'error' ],
 
     /* FUNCTIONAL & BEST USE CASE */
     'no-explicit-any': 'off',
@@ -69,7 +71,6 @@ module.exports = {
     'wrap-iife': [ 'error', 'inside' ],
     'yoda': [ 'error', 'never' ],
     'no-label-var': 'error',
-    'no-shadow': 'error',
     'no-undefined': 'error',
     'no-use-before-define': 'error',
 

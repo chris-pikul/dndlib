@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-// The above rule is to stop VSCode from complaining un-necessarily
 import { enumHas } from './utils/enums';
 import { isPlainObject } from './utils/json-object';
 
