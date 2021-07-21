@@ -36,7 +36,9 @@ module.exports = {
     'no-extend-native': [ 'error', { exceptions: [ 'Object', 'Array' ] } ],
     'no-fallthrough': 'error',
     'no-floating-decimal': 'warn',
-    'no-invalid-this': 'error',
+    
+    // Disabled because of anon-funcs in classes
+    'no-invalid-this': 'off',
     'no-iterator': 'error',
     'no-lone-blocks': 'warn',
     'no-loop-func': 'error',

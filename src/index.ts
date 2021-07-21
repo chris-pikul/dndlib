@@ -5,3 +5,4 @@
  * This file is responsible for re-exporting the library parts for module
  * resolution.
  */
+export * from './alignment';
