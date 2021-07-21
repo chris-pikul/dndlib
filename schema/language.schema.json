@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "language.schema.json",
+    "title": "Language",
+    "description": "A language spoken by creatures (or written)",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "properties": {
+        "script": {
+            "type": "string",
+            "description": "The alphabet or 'script' used to write in this language"
+        },
+        "exotic": {
+            "type": "boolean",
+            "description": "Whether this language is considered 'exotic'"
+        },
+        "speakers": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "description": "The name of the type of creature that speaks this language"
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": [ "script", "speakers" ]
+}

@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "roll-table.schema.json",
+    "title": "Roll Table",
+    "description": "Used for rolling a die to find an entry",
+    "type": "object",
+    "properties": {
+        "die": {
+            "type": "integer",
+            "description": "Which die to roll for this table",
+            "enum": [ 2, 4, 6, 8, 10, 12, 20, 100 ]
+        },
+        "results": {
+            "type": "array",
+            "description": "The results, ordered by their die number",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "description": "An absolute value. If the die equals this, use this value",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "minimumValue": {
+                        "type": "integer",
+                        "description": "A minimum value. If the die is above or equal to this, use this value",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "maximumValue": {
+                        "type": "integer",
+                        "description": "A maximum value, If the die is below or equal to this, use this value",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "An optional display title for this entry",
+                        "minLength": 3
+                    },
+                    "body": {
+                        "$ref": "/text-body.schema.json",
+                        "description": "A displayable text block explaining this entry"
+                    }
+                },
+                "required": [ "body" ]
+            }
+        }
+    },
+    "required": [ "die", "results" ]
+}

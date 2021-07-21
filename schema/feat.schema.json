@@ -1,0 +1,112 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "feat.schema.json",
+    "title": "Feat",
+    "description": "A special feature a character can possess",
+    "type": "object",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "definitions": {
+        "refArray": {
+            "type": "array",
+            "items": {
+                "$ref": "reference.schema.json"
+            },
+            "uniqueItems": true
+        }
+    },
+    "properties": {
+        "prerequisites": {
+            "type": "object",
+            "properties": {
+                "races": { "$ref": "#/definitions/refArray" },
+                "proficiencies": { "$ref": "#/definitions/refArray" },
+                "spellcasting": {
+                    "type": "boolean"
+                },
+                "abilityScores": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            { "$ref": "reference.schema.json" },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                },
+                                "required": [ "value" ]
+                            }
+                        ]
+                    }
+                },
+                "other": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "uniqueItems": true
+                }
+            },
+            "required": [
+                "races",
+                "proficiencies",
+                "spellcasting",
+                "other"
+            ]
+        },
+        "abilityScoreIncreases": {
+            "type": "object",
+            "properties": {
+                "starting": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            { "$ref": "reference.schema.json" },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": [ "amount" ]
+                            }
+                        ]
+                    }
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "choices": {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        { "$ref": "reference.schema.json" },
+                                        { "type": "object" }
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [ "amount", "choices" ]
+                    }
+                }
+            }
+        },
+        "proficiencies": { "$ref": "#/definitions/refArray" }
+    },
+    "required": [
+        "prerequisites",
+        "abilityScoreIncreases",
+        "proficiencies"
+    ]
+}

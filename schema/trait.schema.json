@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "trait.schema.json",
+    "title": "Trait",
+    "description": "A ratial trait a creature can have",
+    "type": "object",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "properties": {
+        "races": {
+            "type": "array",
+            "items": {
+                "$ref": "reference.schema.json"
+            },
+            "uniqueItems": true 
+        }
+    },
+    "required": [ "races" ]
+}

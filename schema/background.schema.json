@@ -1,0 +1,185 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "background.schema.json",
+    "title": "Background",
+    "description": "A pre-made explanation of the character's backstory.",
+    "type": "object",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "definitions": {
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "choices": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                { "$ref": "reference.schema.json" },
+                                { 
+                                    "type": "array",
+                                    "items": {
+                                        "anyOf": [
+                                            { "$ref": "reference.schema.json" },
+                                            { "type": "object" }
+                                        ]
+                                    }
+                                },
+                                { "type": "object" }
+                            ]
+                        }
+                    },
+                    "fromAny": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [ "amount" ]
+            }
+        },
+        "rollTable": {
+            "type": "object",
+            "properties": {
+                "die": {
+                    "type": "integer",
+                    "description": "Which die to roll for this table",
+                    "enum": [ 4, 6, 8, 10, 12, 20 ]
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "minimumValue": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "maximumValue": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "title": {
+                                "type": "string",
+                                "minLength": 3
+                            },
+                            "body": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [ "body" ]
+                    }
+                }
+            },
+            "required": [ "die", "results" ]
+        },
+        "starterOptions": {
+            "type": "object",
+            "properties": {
+                "starting": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "reference.schema.json"
+                    },
+                    "uniqueItems": true
+                },
+                "options": {
+                    "$ref": "#/definitions/options"
+                }
+            },
+            "required": [ "starting", "options" ]
+        }
+    },
+    "properties": {
+        "proficiencies": {
+            "type": "object",
+            "properties": {
+                "skills": {
+                    "$ref": "#/definitions/starterOptions"
+                },
+                "tools": {
+                    "$ref": "#/definitions/starterOptions"
+                },
+                "languages": {
+                    "allOf": [
+                        { "$ref": "#/definitions/starterOptions" },
+                        {
+                            "properties": {
+                                "wildcard": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "standard": {
+                                            "type": "boolean"
+                                        },
+                                        "exotic": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "equipment": {
+            "type": "object",
+            "properties": {
+                "coinPouch": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "clothes": {
+                    "$ref": "reference.schema.json"
+                },
+                "items": {
+                    "$ref": "#/definitions/starterOptions"
+                }
+            }
+        },
+        "lifestyle": {
+            "type": "string",
+            "enum": [
+                "WRETCHED",
+                "SQUALID",
+                "POOR",
+                "MODEST",
+                "COMFORTABLE",
+                "WEALTHY",
+                "ARISTOCRATIC"
+            ]
+        },
+        "feature": {
+            "$ref": "text-section.schema.json"
+        },
+        "traits": {
+            "$ref": "#/definitions/rollTable"
+        },
+        "ideals": {
+            "$ref": "#/definitions/rollTable"
+        },
+        "bonds": {
+            "$ref": "#/definitions/rollTable"
+        },
+        "flaws": {
+            "$ref": "#/definitions/rollTable"
+        }
+    },
+    "required": [ 
+        "proficiencies", 
+        "equipment"
+    ]
+}

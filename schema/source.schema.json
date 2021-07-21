@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "source.schema.json",
+    "title": "Publicated Source",
+    "description": "Holds information on the original source material in which the information was found",
+    "type": "object",
+    "definitions": {
+        "stringArray": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "properties": {
+        "publicationID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "isUA": {
+          "type": "boolean"
+        },
+        "isSRD": {
+          "type": "boolean"
+        },
+        "additional": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "publicationID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "isUA": {
+                "type": "boolean"
+              },
+              "isSRD": {
+                "type": "boolean"
+              }
+            },
+            "required": [ "publicationID", "title" ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [ "publicationID", "title" ]
+}

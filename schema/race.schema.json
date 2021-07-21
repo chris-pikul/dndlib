@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "race.schema.json",
+  "title": "Race",
+  "description": "A race suitable for (N)PC creatures",
+  "definitions": {
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "refAmount": {
+        "type": "object",
+        "properties": {
+          "type": { "$ref": "resource-type.schema.json" },
+          "uri": {
+            "type": "string",
+            "description": "Resources URI within any compendium structure (no host or base /api path required)",
+            "format": "uri-reference",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Displayable name for the resource",
+            "minLength": 1
+          },
+          "amount": { "$ref": "#/definitions/positiveInteger" }
+        },
+        "required": [ "uri", "name", "amount" ]
+    }
+  },
+  "allOf": [{ "$ref": "resource.schema.json" }],
+  "properties": {
+    "parentRace": { "$ref": "reference.schema.json" },
+    "alignment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "age": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adulthood": { "$ref": "#/definitions/positiveInteger" },
+        "lifespan": { "$ref": "#/definitions/positiveInteger" }
+      },
+      "required": ["description"]
+    },
+    "size": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "size.schema.json" },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["type"]
+    },
+    "speed": {
+      "type": "object",
+      "properties": {
+        "walk": { "$ref": "#/definitions/positiveInteger" },
+        "swim": { "$ref": "#/definitions/positiveInteger" },
+        "fly": { "$ref": "#/definitions/positiveInteger" }
+      },
+      "required": ["walk", "swim", "fly"]
+    },
+    "senses": {
+      "type": "object",
+      "properties": {
+        "darkvision": { "$ref": "#/definitions/positiveInteger" },
+        "blindsight": { "$ref": "#/definitions/positiveInteger" },
+        "truesight": { "$ref": "#/definitions/positiveInteger" },
+        "tremorsense": { "$ref": "#/definitions/positiveInteger" }
+      }
+    },
+    "abilityScores": {
+      "type": "object",
+      "properties": {
+          "starting": {
+              "$ref": "#/definitions/refAmount"
+          },
+          "options": {
+              "type": "object",
+              "properties": {
+                "amount": { "$ref": "#/definitions/positiveInteger" },
+                "choices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/refAmount"
+                    },
+                    "uniqueItems": true
+                }
+              },
+              "required": [ "amount", "choices" ]
+          }
+      }
+    },
+    "proficiencies": {
+        "type": "object",
+        "properties": {
+            "starting": {
+                "type": "array",
+                "items": { "$ref": "reference.schema.json" },
+                "uniqueItems": true
+            },
+            "options": {
+                "type": "object",
+                "properties": {
+                    "amount": { "$ref": "#/definitions/positiveInteger" },
+                    "choices": {
+                        "type": "array",
+                        "items": { "$ref": "reference.schema.json" },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [ "amount", "choices" ]
+            }
+        }
+    },
+    "languages": {
+        "type": "object",
+        "properties": {
+            "description": {
+                "type": "string",
+                "minLength": 1
+            },
+            "starting": {
+                "type": "array",
+                "items": { "$ref": "reference.schema.json" },
+                "uniqueItems": true
+            },
+            "options": {
+                "type": "object",
+                "properties": {
+                    "amount": { "$ref": "#/definitions/positiveInteger" },
+                    "choices": {
+                        "type": "array",
+                        "items": { "$ref": "reference.schema.json" },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [ "amount", "choices" ]
+            }
+        }
+    },
+    "traits": {
+        "type": "object",
+        "properties": {
+            "starting": {
+                "type": "array",
+                "items": { "$ref": "reference.schema.json" },
+                "uniqueItems": true
+            },
+            "options": {
+                "type": "object",
+                "properties": {
+                    "amount": { "$ref": "#/definitions/positiveInteger" },
+                    "choices": {
+                        "type": "array",
+                        "items": { "$ref": "reference.schema.json" },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [ "amount", "choices" ]
+            }
+        }
+    },
+    "subRaces": {
+        "type": "array",
+        "items": { "$ref": "reference.schema.json" },
+        "uniqueItems": true
+    }
+  },
+  "required": [ "alignment", "age", "size", "speed" ]
+}

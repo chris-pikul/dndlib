@@ -1,0 +1,211 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "spell.schema.json",
+    "title": "Spell",
+    "description": "Describes a magical spell",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "properties": {
+        "level": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "higherLevels": {
+            "type": "string",
+            "minLength": 1
+        },
+        "range": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "MELEE",
+                        "RANGED"
+                    ]
+                },
+                "distance": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "multipleOf": 5
+                }
+            },
+            "required": [ "type" ]
+        },
+        "components": {
+            "type": "object",
+            "properties": {
+                "verbal": { "type": "boolean" },
+                "semantic": { "type": "boolean" },
+                "material": { "type": "boolean" },
+                "cost": {
+                    "type": "string"
+                },
+                "goldValue": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "vebal",
+                "semantic",
+                "material"
+            ]
+        },
+        "castingTime": {
+            "type": "string",
+            "minLength": 1
+        },
+        "duration": {
+            "type": "string",
+            "minLength": 1
+        },
+        "ritual": { "type": "boolean" },
+        "concentration": { "type": "boolean" },
+        "damage": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": { "$ref": "reference.schema.json" },
+                    "options": {
+                        "type": "array",
+                        "items": { "$ref": "reference.schema.json" },
+                        "uniqueItems": true
+                    },
+                    "baseAmount": {
+                        "type": "string",
+                        "pattern": "^[0-9]{1,2}[Dd][012468]{1,3}(?:\\s?\\+\\s?[0-9A-Za-z]+)?$"
+                    },
+                    "higherSlots": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^[0-9]{1,2}[Dd][012468]{1,3}(?:\\s?\\+\\s?[0-9A-Za-z]+)?$"
+                        }
+                    },
+                    "characterLevel": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^[0-9]{1,2}[Dd][012468]{1,3}(?:\\s?\\+\\s?[0-9A-Za-z]+)?$"
+                        },
+                        "minItems": 20,
+                        "maxItems": 20
+                    }
+                },
+                "required": [ "baseAmount" ]
+            },
+            "uniqueItems": true
+        },
+        "save": {
+            "type": "object",
+            "properties": {
+                "ability": { "$ref": "reference.schema.json" },
+                "description": {
+                    "type": "string",
+                    "minimum": 1
+                },
+                "success": {
+                    "type": "string",
+                    "minimum": 1
+                },
+                "failure": {
+                    "type": "string",
+                    "minimum": 1
+                }
+            },
+            "required": [ "ability" ]
+        },
+        "healing": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9]{1,2}[Dd][012468]{1,3}(?:\\s?\\+\\s?[0-9A-Za-z]+)?$"
+            }
+        },
+        "areaOfEffect": {
+            "type": "object",
+            "properties": {
+                "shape": {
+                    "type": "string",
+                    "enum": [
+                        "LINE",
+                        "CUBE",
+                        "CONE",
+                        "CYLINDER",
+                        "SPHERE"
+                    ]
+                },
+                "size": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "multipleOf": 5
+                }
+            },
+            "required": [ "shape", "size" ]
+        },
+        "school": { "$ref": "reference.schema.json" },
+        "classes": {
+            "type": "array",
+            "items": { "$ref": "reference.schema.json" },
+            "uniqueItems": true
+        },
+        "scroll": {
+            "type": "object",
+            "properties": {
+                "rarity": {
+                    "type": "string",
+                    "enum": [
+                        "COMMON",
+                        "UNCOMMON",
+                        "RARE",
+                        "VERY_RARE",
+                        "LEGENDARY"
+                    ]
+                },
+                "attackBonus": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "saveDC": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "suggestedValue": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "rarity", "attackBonus", "saveDC" ]
+        },
+        "enchanting": {
+            "type": "object",
+            "properties": {
+                "minLevel": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "cost": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "days": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "minLevel", "cost", "days" ]
+        }
+    },
+    "required": [
+        "level",
+        "range",
+        "components",
+        "castingTime",
+        "duration",
+        "ritual",
+        "concentration",
+        "school"
+    ]
+}

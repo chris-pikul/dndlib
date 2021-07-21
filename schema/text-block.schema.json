@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "text-block.schema.json",
+    "title": "Text Block",
+    "description": "Represents paragraphs of text in a multi-format object",
+    "type": "object",
+    "definitions": {
+        "stringArray": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "properties": {
+        "plainText": { "$ref": "#/definitions/stringArray" },
+        "markdown": { "$ref": "#/definitions/stringArray" },
+        "html": { "$ref": "#/definitions/stringArray" }
+    },
+    "required": [ "plainText" ]
+}

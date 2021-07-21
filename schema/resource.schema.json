@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resource.schema.json",
+  "title": "Standard Resource",
+  "description": "Describes the minimum a standard object should include",
+  "type": "object",
+  "properties": {
+    "type": { "$ref": "resource-type.schema.json" },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier within the resource's scope for this object",
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "description": "Resources URI within any compendium structure (no host or base /api path required)",
+      "format": "uri-reference",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "Displayable name for the resource",
+      "minLength": 1
+    },
+    "description": {
+      "description": "Displayable description text explaining the resource, markdown allowed",
+      "$ref": "/text-block.schema.json"
+    },
+    "source": {
+      "$ref": "/source.schema.json"
+    },
+    "tags": {
+      "type": "array",
+      "description": "List of string tags for use with indexing and searching",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  },
+  "required": ["type", "id", "uri", "name", "description", "source", "tags"]
+}

@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "ability-score.schema.json",
+    "title": "Ability Score",
+    "description": "Describes an ability score",
+    "type": "object",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "properties": {
+        "abbreviation": {
+            "type": "string",
+            "description": "A short 3-letter abbreviation for the name",
+            "minLength": 3,
+            "maxLength": 3
+        },
+        "skills": {
+            "type": "array",
+            "items": { "$ref": "reference.schema.json" },
+            "uniqueItems": true
+        }
+    },
+    "required": [ "abbreviation" ]
+}

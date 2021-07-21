@@ -1,0 +1,8 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "damage-type.schema.json",
+    "title": "Damage Type",
+    "description": "Describes the type of damage inflicted",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object"
+}

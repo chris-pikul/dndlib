@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "vehicle.schema.json",
+    "title": "Vehicle",
+    "description": "Details on vehicles (land, water, air)",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "properties": {
+        "category": {
+            "type": "string",
+            "enum": [
+                "MOUNT",
+                "LAND",
+                "WATER",
+                "AIR"
+            ]
+        },
+        "cost": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "carryCapacity": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "speed": {
+            "type": "object",
+            "properties": {
+                "land": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "water": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "air": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "astral": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        }
+    },
+    "required": [ "cost", "carryCapacity", "speed" ]
+}

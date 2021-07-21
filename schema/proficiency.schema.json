@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "proficiency.schema.json",
+    "title": "Proficiency",
+    "description": "Describes a proficiency that a creature can have",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "properties": {
+        "category": {
+            "type": "string",
+            "description": "The proficiency category this applies to, for organizational purposes",
+            "enum": [
+                "ARMOR",
+                "GAME",
+                "INSTRUMENT",
+                "SAVING_THROW",
+                "SKILL",
+                "TOOL",
+                "VEHICLE",
+                "WEAPON"
+            ]
+        },
+        "races": {
+            "type": "array",
+            "items": { "$ref": "reference.schema.json" },
+            "uniqueItems": true
+        },
+        "classes": {
+            "type": "array",
+            "items": { "$ref": "reference.schema.json" },
+            "uniqueItems": true
+        },
+        "references": {
+            "type": "array",
+            "items": { "$ref": "reference.schema.json" },
+            "uniqueItems": true
+        }
+    },
+    "required": [ "category" ]
+}

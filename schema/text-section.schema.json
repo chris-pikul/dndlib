@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "text-section.schema.json",
+    "title": "Text Section",
+    "description": "Common format for blocks of text",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "minLength": 3
+        },
+        "body": { "$ref": "/text-block.schema.json" }
+    },
+    "required": [ "title", "body" ]
+}

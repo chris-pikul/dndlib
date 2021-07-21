@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "hazard.schema.json",
+    "title": "Hazard",
+    "description": "Describes a hazard that may slow, or hurt creatures on their travels",
+    "type": "object",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "properties": {
+        "category": {
+            "type": "string",
+            "enum": [
+                "ELDRITCH_STORM",
+                "ENVIRONMENTAL",
+                "GENERAL",
+                "OTHER",
+                "WEATHER",
+                "WILDERNESS"
+            ]
+        }
+    },
+    "required": [ "category" ]
+}

@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "trap.schema.json",
+    "title": "Trap",
+    "description": "Describes a trap creatures might trigger",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "definitions": {
+        "strarray": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            }
+        }
+    },
+    "properties": {
+        "category": {
+            "type": "string",
+            "enum": [
+                "SIMPLE",
+                "MECHANICAL",
+                "MAGICAL",
+                "COMPLEX"
+            ]
+        },
+        "trigger": {
+            "$ref": "#/definitions/strarray"
+        },
+        "counterMeasure": {
+            "$ref": "#/definitions/strarray"
+        },
+        "effects": {
+            "$ref": "#/definitions/strarray"
+        },
+        "tier": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "threatLevel": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "complex": {
+            "type": "object",
+            "properties": {
+                "initiatives": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "uniqueItems": true
+                },
+                "elements": {
+                    "type": "object",
+                    "properties": {
+                        "constant": {
+                            "$ref": "#/definitions/strarray"
+                        },
+                        "active": {
+                            "$ref": "#/definitions/strarray"
+                        },
+                        "dynamic": {
+                            "$ref": "#/definitions/strarray"
+                        }
+                    },
+                    "required": [
+                        "constant",
+                        "active",
+                        "dynamic"
+                    ]
+                }
+            },
+            "required": [
+                "initiatives",
+                "elements"
+            ]
+        }
+    },
+    "required": [
+        "type",
+        "trigger",
+        "counterMeasure",
+        "effects",
+        "tier",
+        "threatLevel"
+    ]
+}

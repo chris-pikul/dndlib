@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "equipment-pack.schema.json",
+  "title": "Equipment Pack",
+  "description": "Contents of a pre-made equipment pack",
+  "allOf": [{ "$ref": "resource.schema.json" }],
+  "type": "object",
+  "properties": {
+    "value": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]+[CEGSP]P$"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ]
+    },
+    "contents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "$ref": "resource-type.schema.json" },
+          "uri": {
+            "type": "string",
+            "description": "Resources URI within any compendium structure (no host or base /api path required)",
+            "format": "uri-reference",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Displayable name for the resource",
+            "minLength": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["uri", "name", "quantity"]
+      }
+    }
+  },
+  "required": []
+}

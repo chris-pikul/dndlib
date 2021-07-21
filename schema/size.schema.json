@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "size.schema.json",
+    "title": "Creature Size",
+    "description": "Enumerated string for standard creature sizes",
+    "type": "string",
+    "enum": [
+        "TINY",
+        "SMALL",
+        "MEDIUM",
+        "LARGE",
+        "HUGE",
+        "GARGANTUAN"
+    ]
+}

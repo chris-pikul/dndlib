@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "deity.schema.json",
+    "title": "Deity",
+    "description": "A a god/godess of a pantheon",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "properties": {
+        "titles": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true,
+            "description": "The given title of the deity if one applies"
+        },
+        "symbol": {
+            "type": "string",
+            "description": "The given glyph or iconography of the deity"
+        },
+        "pantheons": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true,
+            "description": "The parent pantheon this deity belongs too"
+        },
+        "subPantheon": {
+            "type": "string",
+            "description": "The inner pantheon, if one exists, for this deity"
+        },
+        "alignment": {
+            "$ref": "alignment.schema.json"
+        },
+        "rank": {
+            "type": "string",
+            "enum": [
+                "HERO",
+                "DEMIGOD",
+                "LESSER",
+                "INTERMEDIATE",
+                "GREATER",
+                "OVERDEITY"
+            ]
+        },
+        "portfolio": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        },
+        "domains": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        },
+        "aliases": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        },
+        "perceivedGender": {
+            "type": "string"
+        },
+        "humanoidAppearance": {
+            "type": "string"
+        },
+        "homePlane": {
+            "type": "string"
+        },
+        "worshippers": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "titles",
+        "symbol",
+        "pantheons",
+        "alignment",
+        "portfolio",
+        "domains"
+    ]
+}

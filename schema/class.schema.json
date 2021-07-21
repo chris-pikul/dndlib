@@ -1,0 +1,184 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "class.schema.json",
+    "title": "Class",
+    "description": "Describes the class of an (N)PC",
+    "allOf": [{ "$ref": "resource.schema.json" }],
+    "type": "object",
+    "definitions": {
+        "level": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                },
+                "abilityScoreIncrease": {
+                    "type": "boolean"
+                },
+                "proficiencyBonus": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "spellcasting": {
+                    "type": "object",
+                    "properties": {
+                        "cantrips": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "spells": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "slots": {
+                            "type": "array",
+                            "items": { 
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "minItems": 9,
+                            "maxItems": 9
+                        }
+                    },
+                    "required": [ "cantrips", "spells", "slots" ]
+                },
+                "features": {
+                    "type": "array",
+                    "items": { "$ref": "reference.schema.json" }
+                },
+                "classSpecific": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "level",
+                "proficiencyBonus",
+                "features"
+            ]
+        }
+    },
+    "properties": {
+        "hitDie": {
+            "type": "integer",
+            "description": "Which hit-die size is used",
+            "enum": [ 4, 6, 8, 10, 12, 20 ]
+        },
+        "proficiencies": {
+            "type": "object",
+            "properties": {
+                "savingThrows": {
+                    "type": "array",
+                    "items": { "$ref": "reference.schema.json" },
+                    "uniqueItems": true
+                },
+                "starting": {
+                    "type": "array",
+                    "items": { "$ref": "reference.schema.json" },
+                    "uniqueItems": true
+                },
+                "options": {
+                    "type": "array",
+                    "items": { "$ref": "options.schema.json" }
+                },
+                "equipment": {
+                    "type": "array",
+                    "items": { "$ref": "reference.schema.json" },
+                    "uniqueItems": true
+                }
+            },
+            "required": [ "savingThrows", "starting" ]
+        },
+        "levels": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/level" },
+            "minItems": 20,
+            "maxItems": 20
+        },
+        "equipment": {
+            "type": "object",
+            "properties": {
+                "starting": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            { "$ref": "reference.schema.json" },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "uniqueItems": true
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    { "$ref": "reference.schema.json" },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "amount": {
+                                                "type": "integer",
+                                                "minimum": 1
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "minItems": 1
+                        },
+                        "minItems": 1
+                    }
+                }
+            },
+            "required": [ "starting", "options" ]
+        },
+        "spellcasting": {
+            "type": "object",
+            "properties": {
+                "startingLevel": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "abilityScore": {
+                    "$ref": "reference.schema.json"
+                },
+                "info": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "text-section.schema.json"
+                    }
+                }
+            },
+            "required": [
+                "startingLevel",
+                "abilityScore"
+            ]
+        },
+        "subClasses": {
+            "type": "array",
+            "items": {
+                "$ref": "reference.schema.json"
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "hitDie",
+        "levels",
+        "proficiencies",
+        "equipment"
+    ]
+}

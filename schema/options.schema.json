@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "options.schema.json",
+    "title": "Options",
+    "description": "Multiple options",
+    "type": "object",
+    "properties": {
+      "type": { "$ref": "resource-type.schema.json" },
+      "amount": {
+          "type": "integer",
+          "minimum": 1
+      },
+      "choices": {
+          "type": "array",
+          "items": {
+              "anyOf": [
+                  { "$ref": "reference.schema.json" },
+                  { "type": "object" }
+              ]
+          }
+      }
+    },
+    "required": [ "amount", "choices" ]
+  }
+  
