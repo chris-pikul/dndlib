@@ -1,4 +1,14 @@
 /**
+ * Ensures a number is positive by maxing it against 0.
+ * 
+ * @param value Number to clamp
+ * @returns New number, that's positive
+ */
+export function positive(value:number):number {
+  return Math.max(value, 0);
+}
+
+/**
  * Clamps the given value to be within the given range.
  * 
  * @param value Number to clamp
