@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "currency.schema.json",
+  "title": "Currency",
+  "description": "Holds an amount of different denominations of currency.",
+  "type": "object",
+  "properties": {
+      "copper": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "silver": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "electrum": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "gold": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "platinum": {
+        "type": "integer",
+        "minimum": 0
+      }
+  }
+}
