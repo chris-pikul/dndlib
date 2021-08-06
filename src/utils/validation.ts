@@ -4,7 +4,7 @@
  * Passes: /some/v4lu3s-go/here
  * Fails: no/prefix/and/$ymbols
  */
-export const RegexpURI = /^(?:\/[A-Za-z0-9\-_]+)+$/g;
+const RegexpURI = /^(?:\/[a-z0-9\-_]+)+$/gi;
 
 /**
  * Tests that the given input is a string and
@@ -27,7 +27,7 @@ export function testURI(input:string, allowEmpty = false):boolean {
  * Passes: any-values01-here
  * Fails: Caps_and-symbols
  */
-export const RegexpKabob = /^[a-z0-9-]+$/g;
+const RegexpKabob = /^[a-z0-9-]+$/g;
 
 /**
  * Tests that the given input is a string and
@@ -41,7 +41,7 @@ export function testKabob(input:string, allowEmpty = false):boolean {
     return true;
   else if(input.length === 0)
     return false;
-  return RegexpURI.test(input);
+  return RegexpKabob.test(input);
 }
 
 /**
