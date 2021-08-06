@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+      "target": "ES5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "declaration": false,
+      "sourceMap": false,
+      "allowSyntheticDefaultImports": true,
+      "experimentalDecorators": true,
+  },
+
+  "include": [ "src/**/*" ],
+}

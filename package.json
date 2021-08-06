@@ -8,6 +8,8 @@
     "clean:postbuild": "rimraf ./lib/interfaces",
     "lint": "npx eslint ./src --ext .js,.ts",
     "lint:quiet": "npx eslint ./src --quiet --ext .js,.ts",
+    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.tests.json\" mocha --parallel -r ts-node/register tests/**/*.spec.ts",
+    "coverage": "nyc npm run test",
     "build": "npm run clean && npm run lint && tsc && npm run clean:postbuild"
   },
   "repository": {
@@ -31,10 +33,16 @@
   },
   "homepage": "https://github.com/chris-pikul/dndlib#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
+    "chai": "^4.3.4",
+    "cross-env": "^7.0.3",
     "eslint": "^7.31.0",
     "eslint-plugin-node": "^11.1.0",
+    "mocha": "^9.0.3",
+    "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.1.0",
