@@ -1,4 +1,4 @@
-import { expect, util } from 'chai';
+import { expect } from 'chai';
 import { describe } from 'mocha';
 
 import {
