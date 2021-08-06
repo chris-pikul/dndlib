@@ -7,7 +7,7 @@ import {
   strictValidateCountedArray,
 } from '../../src/utils/arrays';
 
-describe('Math Utilities', () => {
+describe('Array Utilities', () => {
   describe('inPlaceConcat()', () => {
     it('concatenates in-place', () => {
       const arr1 = [1, 2];

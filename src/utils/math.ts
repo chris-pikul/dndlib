@@ -39,7 +39,7 @@ export function clampInt(value:number, min = 0, max:number = Number.MAX_VALUE):n
  * @param max Maximum value, inclusive
  */
 export function randomFloat(min = 0, max:number = Number.MAX_VALUE):number {
-  return (Math.random() * (max - min + 1)) + min;
+  return (Math.random() * (max - min)) + min;
 }
 
 /**
@@ -48,5 +48,5 @@ export function randomFloat(min = 0, max:number = Number.MAX_VALUE):number {
  * @param max Maximum value, inclusive
  */
 export function randomInt(min = 0, max:number = Number.MAX_SAFE_INTEGER):number {
-  return Math.floor(randomFloat(min, max));
+  return Math.round(randomFloat(min, max));
 }
