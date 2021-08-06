@@ -46,6 +46,8 @@ export enum AlignmentEntropy {
   LAWFUL = 'LAWFUL',
 };
 
+export const alignmentEntropyHas = (key:string):boolean => enumHas(AlignmentEntropy, key);
+
 /**
  * The morality axis of the alignment.
  * Can be either good, neutral, or evil.
@@ -55,6 +57,8 @@ export enum AlignmentMorality {
   NEUTRAL = 'NEUTRAL',
   EVIL = 'EVIL',
 };
+
+export const alignmentMoralityHas = (key:string):boolean => enumHas(AlignmentMorality, key);
 
 /**
  * Holds the two axes of alignment as one value.
@@ -88,10 +92,10 @@ export class AlignmentAxes implements IAlignmentAxes {
             console.warn(err.message);
         }
       } else if(isPlainObject(props)) {
-        if(props.entropy && typeof props.entropy === 'string')
+        if(props.entropy && typeof props.entropy === 'string' && alignmentEntropyHas(props.entropy))
           this.entropy = props.entropy;
         
-        if(props.morality && typeof props.morality === 'string')
+        if(props.morality && typeof props.morality === 'string' && alignmentMoralityHas(props.morality))
           this.morality = props.morality;
       } else {
         console.warn(`Attemnpting to instantiate AlignmentAxes with invalid property.`);
