@@ -127,8 +127,7 @@ export default abstract class Resource implements IResource, IAssignable, IValid
 
       if(!props.source)
         throw new TypeError(`Missing "source" property for Resource.`);
-
-      // Source.StrictValidateProps(props.description);
+      Source.strictValidateProps(props.source);
 
       if(!props.tags)
         throw new TypeError(`Missing "tags" property for Resource.`);
