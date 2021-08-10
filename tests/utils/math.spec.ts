@@ -6,6 +6,7 @@ import {
   clampFloat,
   clampInt,
   randomFloat,
+  randomInt,
 } from '../../src/utils/math';
 
 describe('Math Utilities', () => {
@@ -56,7 +57,7 @@ describe('Math Utilities', () => {
   describe('randomInt()', () => {
     it('returns within range (100 attempts)', () => {
       for(let i=0; i < 100; i++) {
-        expect(randomFloat(1,10)).to.be.within(1, 10);
+        expect(randomInt(1,10)).to.be.within(1, 10);
       };
     });
   });

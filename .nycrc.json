@@ -9,7 +9,10 @@
   ],
   "exclude": [
     "**/*.d.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/index.ts",
+    "src/interfaces"
   ],
   "reporter": [
     "text",

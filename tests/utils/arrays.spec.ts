@@ -31,11 +31,22 @@ describe('Array Utilities', () => {
       expect(() => strictValidateCountedArrayElem(props)).to.throw('Missing "type" property for CountedArrayElem.');
     });
 
+    it('checks the type property type', () => {
+      expect(() => strictValidateCountedArrayElem({ type: 'STR', count: 1 }, 'string')).to.not.throw();
+      expect(() => strictValidateCountedArrayElem({ type: 123, count: 1 }, 'string')).to.throw(TypeError);
+    });
+
     it('ensures a count property in the parameter', () => {
       const props = {
         type: 'TEST',
       };
       expect(() => strictValidateCountedArrayElem(props)).to.throw('Missing "count" property for CountedArrayElem.');
+      
+      const bad = {
+        type: 'TEST',
+        count: 'STR',
+      };
+      expect(() => strictValidateCountedArrayElem(bad)).to.throw(TypeError);
     });
 
     it('does not throw on valid object', () => {
