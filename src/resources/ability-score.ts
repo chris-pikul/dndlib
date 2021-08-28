@@ -110,6 +110,8 @@ export default class AbilityScore extends Resource implements IAbilityScore, IAs
   }
 
   assign = (props:JSONObject):void => {
+    super.assign(props);
+    
     if(props.abbreviation && typeof props.abbreviation === 'string')
       this.abbreviation = props.abbreviation;
 
