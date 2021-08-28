@@ -200,6 +200,15 @@ export default abstract class Resource implements IResource, IAssignable, IValid
      */
     tags : Array<string>;
 
+    /**
+     * Constructs a new Resource object.
+     * 
+     * The optional classProps parameter allows for child classes to
+     * set up the base properties for their own types.
+     * 
+     * @param props Resource|Object properties to copy
+     * @param classProps IResourceClassProps additional properties to override
+     */
     constructor(props?:any, classProps?:IResourceClassProps) {
       this.type = ResourceType.UNKNOWN;
       this.id = 'unknown';
