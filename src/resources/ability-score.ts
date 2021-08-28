@@ -2,7 +2,11 @@ import Resource from '../resource';
 import { ReferenceSkill } from '../reference';
 import { ResourceType } from '../resource-type';
 import { isPlainObject } from '../utils';
-import { JSONObject } from '../interfaces';
+import {
+  IAssignable,
+  IValidatable,
+  JSONObject,
+} from '../interfaces';
 
 /**
  * Mechanical rule describing an ability that a character can have.
@@ -27,7 +31,7 @@ export interface IAbilityScore {
  * 
  * Schema: /ability-score.schema.json
  */
-export default class AbilityScore extends Resource implements IAbilityScore {
+export default class AbilityScore extends Resource implements IAbilityScore, IAssignable, IValidatable {
   /**
    * Performs type checking and throws errors if the
    * properties needed are not the right types.
