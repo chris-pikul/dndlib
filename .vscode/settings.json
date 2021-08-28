@@ -16,5 +16,8 @@
     }
   ],
   "eslint.autoFixOnSave": true
-  }
+  },
+  "auto-close-tag.disableOnLanguage": [
+    "typescript"
+  ]
 }

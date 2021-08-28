@@ -82,6 +82,11 @@ export interface IResource {
     tags : Array<string>;
 }
 
+export interface IResourceClassProps {
+  type ?: ResourceType;
+  uriBase ?: string;
+}
+
 /**
  * An abstract class representing the basis of any resource.
  * 
@@ -91,8 +96,10 @@ export default abstract class Resource implements IResource, IAssignable, IValid
     /**
      * Performs type checking and throws errors if the
      * properties needed are not the right types.
+     * 
      * Does not fully validate the data within them,
      * but will check for emptyness, or incorrect Enums
+     * 
      * @throws TypeErrors for invalid properties
      * @param props Incoming properties object
      */
@@ -193,7 +200,7 @@ export default abstract class Resource implements IResource, IAssignable, IValid
      */
     tags : Array<string>;
 
-    constructor(props?:any, classProps?:JSONObject) {
+    constructor(props?:any, classProps?:IResourceClassProps) {
       this.type = ResourceType.UNKNOWN;
       this.id = 'unknown';
       this.uri = '/';
