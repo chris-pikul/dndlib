@@ -1,7 +1,6 @@
-import { JSONObject } from '../interfaces';
+import type { JSONObject, ArrayIteratorCB } from '../interfaces';
 import { isPlainObject } from './json-object';
 
-export type ArrayIteratorCB = (prop:any, ind?:number) => void;
 export type StrictArrayPropValidationCB = string | ArrayIteratorCB;
 
 export const makeStrictValidateMissingProps = (className:string):Error => new TypeError(`${className}.StrictValidateProps requires a valid parameter to check, none was given.`);

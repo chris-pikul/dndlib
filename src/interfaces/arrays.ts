@@ -23,3 +23,19 @@ export type CountedArrayElem<Type> = {
  * is expected to be an enum.
  */
 export type CountedArray<Type> = Array<CountedArrayElem<Type>>;
+
+/**
+ * Signature for a standard Array.forEach() callback.
+ */
+export type ArrayIteratorCB = (prop:any, ind?:number) => void;
+
+/**
+ * Signature for a standard Array.map() callback.
+ */
+export type ArrayMapIteratorCB<InputType=any, ReturnType=any> = (props:InputType, ind?:number) => ReturnType;
+
+/**
+ * Signature for a finding operation like Array.find() or Array.includes()
+ * callback.
+ */
+export type ArrayBooleanIteratorCB<InputType=any> = (props:InputType, ind?:number) => boolean;

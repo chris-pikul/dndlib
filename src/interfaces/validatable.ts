@@ -1,3 +1,5 @@
+export type ValidationErrors = Array<string>;
+
 /**
  * Allows the object to have its data validated
  */
@@ -8,7 +10,7 @@ export interface IValidatable {
      * Returns an array of error messages if any where encountered.
      * @returns string[] of errors if any where found
      */
-    validate():Array<string>;
+    validate():ValidationErrors;
 
     /**
      * Performs a validation sweep on the properties within.
@@ -19,3 +21,10 @@ export interface IValidatable {
      */
     isValid():boolean;
 }
+
+/**
+ * Callback signature for the function used in validating array properties.
+ * Should return it's own immutable array of errors that will be processed
+ * down.
+ */
+export type ValidateArrayCB = (prop:any, ind?:number) => ValidationErrors;

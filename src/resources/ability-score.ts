@@ -1,8 +1,12 @@
 import Resource from '../resource';
 import { ReferenceSkill } from '../reference';
 import { ResourceType } from '../resource-type';
-import { isPlainObject } from '../utils';
-import { IValidatable } from '../interfaces';
+import {
+  isPlainObject,
+  validateOptionalArray,
+  validateRequiredString,
+} from '../utils';
+import { IValidatable, ValidationErrors } from '../interfaces';
 import {
   strictValidateOptionalArrayProp,
   strictValidatePropsParameter,
@@ -94,18 +98,20 @@ export default class AbilityScore extends Resource implements IAbilityScore, IVa
     }
   }
 
-  validate = ():Array<string> => {
+  validate = ():ValidationErrors => {
     const errs:Array<string> = super.validate();
 
-    // Check the abbreviation
-    if(this.abbreviation.length !== 3)
-      errs.push(`AbilityScore should have a 3-letter abbreviation. Instead found a string of "${this.abbreviation.length}".`);
+    validateRequiredString(errs, 'AbilityScore', 'abbreviation', this.abbreviation, 3, 3);
 
-    // Validate each reference and hoist the errors into this validation
-    this.skills.forEach((ent:ReferenceSkill, ind:number) => {
-      ent.validate().forEach((err:string) => {
-        errs.push(`AbilityScore skill[${ind}]: ${err}`);
-      });
+    validateOptionalArray(errs, 'AbilityScore', 'skills', this.skills, (prop:any, ind:number):ValidationErrors => {
+      if(prop) {
+        if(prop instanceof ReferenceSkill)
+          return prop.validate().map((err:string) => `AbilityScore.skills[${ind}]: ${err}`);
+        
+        return [ `AbilityScore.skills[${ind}] should be a ReferenceSkill object.` ];
+      }
+
+      return [ `AbilityScore.skills[${ind}] is null or undefined.` ];
     });
 
     return errs;
