@@ -3,8 +3,8 @@ import { ReferenceSkill } from '../reference';
 import { ResourceType } from '../resource-type';
 import {
   isPlainObject,
-  validateOptionalArray,
-  validateRequiredString,
+  validateArray,
+  validateString,
 } from '../utils';
 import { IValidatable, ValidationErrors } from '../interfaces';
 import {
@@ -101,9 +101,9 @@ export default class AbilityScore extends Resource implements IAbilityScore, IVa
   validate = ():ValidationErrors => {
     const errs:Array<string> = super.validate();
 
-    validateRequiredString(errs, 'AbilityScore', 'abbreviation', this.abbreviation, 3, 3);
+    validateString(errs, 'AbilityScore', 'abbreviation', this.abbreviation, { absLength: 3 });
 
-    validateOptionalArray(errs, 'AbilityScore', 'skills', this.skills, (prop:any, ind:number):ValidationErrors => {
+    validateArray(errs, 'AbilityScore', 'skills', this.skills, (prop:any, ind:number):ValidationErrors => {
       if(prop) {
         if(prop instanceof ReferenceSkill)
           return prop.validate().map((err:string) => `AbilityScore.skills[${ind}]: ${err}`);
@@ -112,7 +112,7 @@ export default class AbilityScore extends Resource implements IAbilityScore, IVa
       }
 
       return [ `AbilityScore.skills[${ind}] is null or undefined.` ];
-    });
+    }, true);
 
     return errs;
   }

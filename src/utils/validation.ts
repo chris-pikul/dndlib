@@ -78,33 +78,38 @@ export const testIfPositiveInteger = (input:any):boolean => (testIfInteger(input
  * @param className The name of the class validating
  * @param propName The name of the prop being validated
  * @param prop The property itself
- * @param minLength Optional minimum string length
- * @param maxLength Optional maximum string length
+ * @param options Additional validation options
+ * @param required Is this prop required (non-null)?
  */
-export const validateRequiredString = (
+export const validateString = (
   errs:ValidationErrors,
   className:string,
   propName:string,
   prop:any,
-  minLength?:number,
-  maxLength?:number,
+  options:({
+    minLength?:number,
+    maxLength?:number,
+    absLength?:number,
+  }) = {},
+  optional = false,
 ):void => {
   const newErrs:ValidationErrors = [];
+
+  if(!optional && !prop)
+    newErrs.push(`${className}.${propName} is a required string.`);
 
   if(prop) {
     if(typeof prop !== 'string') {
       newErrs.push(`${className}.${propName} should be a string type, instead found "${typeof prop}".`);
-    } else if(minLength || maxLength) {
-      if(minLength && maxLength && minLength === maxLength) {
-        if(prop.length === maxLength)
-          newErrs.push(`${className}.${propName} "${prop}" should have an exact length of ${maxLength}, instead it has a length of ${prop.length}.`);
-      } else {
-        if(minLength && prop.length < minLength)
-          newErrs.push(`${className}.${propName} "${prop}" should have a minumum length of ${minLength}, instead it has a length of ${prop.length}.`);
-      
-        if(maxLength && prop.length > maxLength)
-          newErrs.push(`${className}.${propName} "${prop}" should have a maximum length of ${maxLength}, instead it has a length of ${prop.length}.`);
-      }
+    } else if(options.absLength) {
+      if(prop.length !== options.absLength)
+        newErrs.push(`${className}.${propName} "${prop}" should have an exact length of ${options.absLength}, instead it has a length of ${prop.length}.`);
+    } else if(options.minLength || options.maxLength) {
+      if(options.minLength && prop.length < options.minLength)
+        newErrs.push(`${className}.${propName} "${prop}" should have a minumum length of ${options.minLength}, instead it has a length of ${prop.length}.`);
+    
+      if(options.maxLength && prop.length > options.maxLength)
+        newErrs.push(`${className}.${propName} "${prop}" should have a maximum length of ${options.maxLength}, instead it has a length of ${prop.length}.`);
     }
   }
 
@@ -126,25 +131,29 @@ export const validateRequiredString = (
  * @param propName The name of the prop being validated
  * @param prop The property itself
  * @param cb Function called on each entry, returning an array of errors
+ * @param required Is this prop required (non-null)?
  * @returns Array of string errors
  */
-export const validateOptionalArray = (
+export const validateArray = (
   errs:ValidationErrors,
   className:string,
   propName:string,
   prop:any,
   cb:ValidateArrayCB,
+  optional = false,
 ):void => {
-  if(!prop)
-    return;
-
   const newErrs:ValidationErrors = [];
 
-  if(Array.isArray(prop)) {
-    const subErrs = prop.map(cb);
-    inPlaceConcat<string>(newErrs, ...subErrs);
-  } else {
-    newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+  if(!optional && !prop)
+    newErrs.push(`${className}.${propName} is a required array.`);
+
+  if(prop) {
+    if(Array.isArray(prop)) {
+      const subErrs = prop.map(cb);
+      inPlaceConcat<string>(newErrs, ...subErrs);
+    } else {
+      newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+    }
   }
 
   inPlaceConcat<string>(errs, newErrs);
