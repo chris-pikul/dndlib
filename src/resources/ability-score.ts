@@ -2,11 +2,7 @@ import Resource from '../resource';
 import { ReferenceSkill } from '../reference';
 import { ResourceType } from '../resource-type';
 import { isPlainObject } from '../utils';
-import {
-  IAssignable,
-  IValidatable,
-  JSONObject,
-} from '../interfaces';
+import { IValidatable } from '../interfaces';
 import {
   strictValidateOptionalArrayProp,
   strictValidatePropsParameter,
@@ -36,7 +32,7 @@ export interface IAbilityScore {
  * 
  * Schema: /ability-score.schema.json
  */
-export default class AbilityScore extends Resource implements IAbilityScore, IAssignable, IValidatable {
+export default class AbilityScore extends Resource implements IAbilityScore, IValidatable {
   /**
    * Performs type checking and throws errors if the
    * properties needed are not the right types.
@@ -96,16 +92,6 @@ export default class AbilityScore extends Resource implements IAbilityScore, IAs
         console.warn(`Attempting to instantiate an AbilityScore object with an invalid parameter. Expected either an AbilityScore object, JSON object of properties, or a string. Instead encountered a "${typeof props}".`);
       }
     }
-  }
-
-  assign = (props:JSONObject):void => {
-    super.assign(props);
-    
-    if(props.abbreviation && typeof props.abbreviation === 'string')
-      this.abbreviation = props.abbreviation;
-
-    if(props.skills && Array.isArray(props.skills))
-      this.skills = props.skills.map((ent:any) => new ReferenceSkill(ent));
   }
 
   validate = ():Array<string> => {
