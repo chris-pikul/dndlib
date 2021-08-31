@@ -11,6 +11,11 @@ import {
 import { ResourceType, resourceTypeHas } from './resource-type';
 
 import { isPlainObject, testURI } from './utils';
+import {
+  strictValidateOptionalProp,
+  strictValidatePropsParameter,
+  strictValidateRequiredProp,
+} from './utils/errors';
 
 /**
  * References are used to link resources between each other
@@ -70,25 +75,11 @@ export default class Reference implements IReference, IAssignable, IValidatable 
      * @param props Incoming properties object
      */
     public static strictValidateProps = (props:any):void => {
-      if(!props)
-        throw new TypeError(`Reference.StrictValidateProps requires a valid parameter to check, none was given.`);
+      strictValidatePropsParameter(props, 'Reference');
 
-      if(!props.type)
-        throw new TypeError(`Missing "type" property for Reference.`);
-      else if(typeof props.type !== 'string')
-        throw new TypeError(`Reference "type" property must be a string, instead found "${typeof props.type}"`);
-      else if(!resourceTypeHas(props.type))
-        throw new TypeError(`Reference "type" property must be a valid ResourceType enum, "${props.type}" is not one.`);
-
-      if(!props.uri)
-        throw new TypeError(`Missing "uri" property for Reference.`);
-      else if(typeof props.uri !== 'string')
-        throw new TypeError(`Reference "uri" property must be a string, instead found "${typeof props.uri}".`);
-      else if(props.uri.length === 0)
-        throw new TypeError(`Reference "uri" property must not be an empty string.`);
-
-      if(props.name && typeof props.name !== 'string')
-        throw new TypeError(`Reference "name" must be a string if supplied, instead found "${typeof props.name}".`);
+      strictValidateRequiredProp(props, 'Reference', 'type', 'string');
+      strictValidateRequiredProp(props, 'Reference', 'uri', 'string');
+      strictValidateOptionalProp(props, 'Reference', 'name', 'string');
     }
     
     /**

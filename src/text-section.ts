@@ -10,6 +10,12 @@ import {
 
 import { isPlainObject, inPlaceConcat } from './utils';
 
+import {
+  strictValidatePropsParameter,
+  strictValidateRequiredObjectProp,
+  strictValidateRequiredProp,
+} from './utils/errors';
+
 import TextBlock from './text-block';
 
 /**
@@ -67,17 +73,11 @@ export default class TextSection implements ITextSection, IAssignable, IValidata
      * @param props Incoming properties object
      */
     public static strictValidateProps = (props:any):void => {
-      if(!props)
-        throw new TypeError(`TextSection.StrictValidateProps requires a valid parameter to check, none was given.`);
+      strictValidatePropsParameter(props, 'TextSection');
 
-      if(props.title && typeof props.title !== 'string')
-        throw new TypeError(`TextSection "title" property must be a string, instead found "${typeof props.title}".`);
-
-      if(!props.body)
-        throw new TypeError(`Missing "body" property for TextSection.`);
-
-      TextBlock.strictValidateProps(props.body);
-    }
+      strictValidateRequiredProp(props, 'TextSection', 'title', 'string');
+      strictValidateRequiredObjectProp(props, 'TextSection', 'body', TextBlock.strictValidateProps);
+    };
 
     /**
      * The title of the section.
@@ -97,20 +97,10 @@ export default class TextSection implements ITextSection, IAssignable, IValidata
 
       // Check if props have been provided
       if(typeof props !== 'undefined' && props !== null) {
-        if(props instanceof TextSection) {
-          /*
-           * If this is another TextSection,
-           * Copy the properties in.
-           */
-          this.title = props.title;
-          this.body = props.body;
-        } else if(isPlainObject(props)) {
-          /*
-           * If this is a JSON object (plain JS object),
-           * Attempt to assign the properties.
-           */
+        if(isPlainObject(props) || props instanceof TextSection) {
           TextSection.strictValidateProps(props);
-          this.assign(props);
+          this.title = props.title;
+          this.body = new TextBlock(props.body);
         } else {
           console.warn(`Attempting to instantiate a TextSection object with an invalid parameter. Expected either a TextSection object, or a plain JSON Object of properties. Instead encountered a "${typeof props}"`);
         }

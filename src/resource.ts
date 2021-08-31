@@ -20,6 +20,13 @@ import {
   isPlainObject,
 } from './utils';
 
+import {
+  strictValidatePropsParameter,
+  strictValidateRequiredArrayProp,
+  strictValidateRequiredObjectProp,
+  strictValidateRequiredProp,
+} from './utils/errors';
+
 /**
  * Schema: /resource.schema.json
  */
@@ -104,44 +111,14 @@ export default abstract class Resource implements IResource, IAssignable, IValid
      * @param props Incoming properties object
      */
     public static strictValidateProps = (props:any):void => {
-      if(!props)
-        throw new TypeError(`Resource.StrictValidateProps requires a valid parameter to check, none was given.`);
+      strictValidatePropsParameter(props, 'Resource');
 
-      if(!props.type)
-        throw new TypeError(`Missing "type" property for Resource.`);
-      if(typeof props.type !== 'string')
-        throw new TypeError(`Resource "type" property must be a string, instead found "${typeof props.type}".`);
-      if(!resourceTypeHas(props.type))
-        throw new TypeError(`Resource "type" property must be a valid ResourceType enum, "${props.type}" is not one.`);
-
-      if(!props.id)
-        throw new TypeError(`Missing "id" property for Resource.`);
-      if(typeof props.id !== 'string')
-        throw new TypeError(`Resource "id" property must be a string, instead found "${typeof props.id}".`);
-      if(props.id.length === 0)
-        throw new TypeError(`Resource "id" property must not be an empty string.`);
-
-      if(!props.name)
-        throw new TypeError(`Missing "name" property for Resource.`);
-      if(typeof props.name !== 'string')
-        throw new TypeError(`Resource "name" property must be a string, instead found "${typeof props.name}".`);
-      if(props.name.length === 0)
-        throw new TypeError(`Resource "name" property must not be an empty string.`);
-
-      if(!props.description)
-        throw new TypeError(`Missing "description" property for Resource.`);
-      TextBlock.strictValidateProps(props.description);
-
-      if(!props.source)
-        throw new TypeError(`Missing "source" property for Resource.`);
-      Source.strictValidateProps(props.source);
-
-      if(!props.tags)
-        throw new TypeError(`Missing "tags" property for Resource.`);
-      if(typeof props.tags !== 'object' || !Array.isArray(props.tags))
-        throw new TypeError(`Resource "tags" property must be an array, instead found "${typeof props.tags}"`);
-      if(props.tags.findIndex((ent:any) => typeof ent !== 'string') !== -1)
-        throw new TypeError(`Resource "tags" array contains non-string members.`);
+      strictValidateRequiredProp(props, 'Resource', 'type', 'string');
+      strictValidateRequiredProp(props, 'Resource', 'id', 'string');
+      strictValidateRequiredProp(props, 'Resource', 'name', 'string');
+      strictValidateRequiredObjectProp(props, 'Resource', 'description', TextBlock.strictValidateProps);
+      strictValidateRequiredObjectProp(props, 'Resource', 'source', Source.strictValidateProps);
+      strictValidateRequiredArrayProp(props, 'Resource', 'tags', 'string');
     };
 
     /**
@@ -219,8 +196,8 @@ export default abstract class Resource implements IResource, IAssignable, IValid
       this.tags = [];
 
       // Check if props have been provided
-      if(typeof props !== 'undefined' && props !== null) {
-        if(props instanceof Resource) {
+      if(props) {
+        if(isPlainObject(props) || props instanceof Resource) {
           /*
            * If this is another Resource,
            * Copy the properties in.
@@ -233,18 +210,6 @@ export default abstract class Resource implements IResource, IAssignable, IValid
           this.description = new TextBlock(props.description);
           this.source = props.source;
           this.tags = [ ...props.tags ];
-        } else if(isPlainObject(props)) {
-          /*
-           * If this is a JSON object (plain JS object),
-           * Attempt to assign the properties.
-           */
-          Resource.strictValidateProps(props);
-
-          // Assign the private properties here
-          if(props.type && typeof props.type === 'string' && resourceTypeHas(props.type))
-            this.type = props.type as ResourceType;
-
-          this.assign(props);
         } else {
           console.warn(`Attempting to instantiate a Resource object with an invalid parameter. Expected either a Resource object, or a plain JSON Object of properties. Instead encountered a "${typeof props}"`);
         }

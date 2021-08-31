@@ -9,6 +9,12 @@ import {
   StringArray,
 } from './interfaces';
 
+import {
+  strictValidateOptionalArrayProp,
+  strictValidatePropsParameter,
+  strictValidateRequiredArrayProp,
+} from './utils/errors';
+
 import { isPlainObject } from './utils/json-object';
 
 /**
@@ -34,14 +40,14 @@ export interface ITextBlock {
     /**
      * A markdown (commonmark) formatted version.
      */
-    markdown? : StringArray
+    markdown ?: StringArray
 
     /**
      * An HTML version. The text should be escapped
      * properly for JSON. And should only contain
      * formatting elements such as B, I, U, Em, etc.
      */
-    html? : StringArray
+    html ?: StringArray
 }
 
 /**
@@ -70,8 +76,8 @@ export default class TextBlock implements ITextBlock, IAssignable, IValidatable 
      */
     public static isZeroValue = (obj:TextBlock):boolean => (
       obj.plainText.length === 0
-        && obj.markdown.length === 0
-        && obj.html.length === 0
+        && !obj.markdown.length
+        && !obj.html.length
     );
 
     /**
@@ -83,71 +89,44 @@ export default class TextBlock implements ITextBlock, IAssignable, IValidatable 
      * @param props Incoming properties object
      */
     public static strictValidateProps = (props:any):void => {
-      if(!props)
-        throw new TypeError(`TextBlock.StrictValidateProps requires a valid parameter to check, none was given.`);
+      strictValidatePropsParameter(props, 'TextBlock');
 
-      if(!props.plainText)
-        throw new TypeError(`Missing "plainText" property for TextBlock.`);
-      if(typeof props.plainText !== 'object' || !Array.isArray(props.plainText))
-        throw new TypeError(`TextBlock "plainText" property must be an array, instead found "${typeof props.plainText}"`);
-      if(props.plainText.findIndex((ent:any) => typeof ent !== 'string') !== -1)
-        throw new TypeError(`TextBlock "plainText" array contains non-string members.`);
-
-      if(props.markdown) {
-        if(typeof props.markdown !== 'object' || !Array.isArray(props.markdown))
-          throw new TypeError(`TextBlock "markdown" property must be an array, instead found "${typeof props.markdown}"`);
-        if(props.markdown.findIndex((ent:any) => typeof ent !== 'string') !== -1)
-          throw new TypeError(`TextBlock "markdown" array contains non-string members.`);
-      }
-
-      if(props.html) {
-        if(typeof props.html !== 'object' || !Array.isArray(props.html))
-          throw new TypeError(`TextBlock "html" property must be an array, instead found "${typeof props.html}"`);
-        if(props.html.findIndex((ent:any) => typeof ent !== 'string') !== -1)
-          throw new TypeError(`TextBlock "html" array contains non-string members.`);
-      }
+      strictValidateRequiredArrayProp(props, 'TextBlock', 'plainText', 'string');
+      strictValidateOptionalArrayProp(props, 'TextBlock', 'markdown', 'string');
+      strictValidateOptionalArrayProp(props, 'TextBlock', 'html', 'string');
     };
 
     /**
      * The plain text (no formatting markers) version
      * This is required
      */
-    plainText : StringArray;
+    plainText : StringArray = [];
 
     /**
      * A markdown (commonmark) formatted version.
      */
-    markdown : StringArray;
+    markdown ?: StringArray;
 
     /**
      * An HTML version. The text should be escapped
      * properly for JSON. And should only contain
      * formatting elements such as B, I, U, Em, etc.
      */
-    html : StringArray;
+    html ?: StringArray;
 
     constructor(props?:any) {
-      this.plainText = [];
-      this.markdown = [];
-      this.html = [];
-
       // Check if props have been provided
-      if(typeof props !== 'undefined' && props !== null) {
-        if(props instanceof TextBlock) {
-          /*
-           * If this is another TextBlock,
-           * Copy the properties in.
-           */
-          this.plainText = [ ...props.plainText ];
-          this.markdown = [ ...props.markdown ];
-          this.html = [ ...props.html ];
-        } else if(isPlainObject(props)) {
-          /*
-           * If this is a JSON object (plain JS object),
-           * Attempt to assign the properties.
-           */
+      if(props) {
+        if(isPlainObject(props) || props instanceof TextBlock) {
           TextBlock.strictValidateProps(props);
-          this.assign(props);
+
+          this.plainText = [ ...props.plainText ];
+
+          if(props.markdown)
+            this.markdown = [ ...props.markdown ];
+          
+          if(props.html)
+            this.html = [ ...props.html ];
         } else {
           console.warn(`Attempting to instantiate a TextBody object with an invalid parameter. Expected either a TextBody object, or a plain JSON Object of properties. Instead encountered a "${typeof props}"`);
         }

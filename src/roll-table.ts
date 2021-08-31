@@ -17,6 +17,14 @@ import {
   testIfPositiveInteger,
 } from './utils';
 
+import {
+  strictValidateOptionalProp,
+  strictValidatePropsParameter,
+  strictValidateRequiredArrayProp,
+  strictValidateRequiredObjectProp,
+  strictValidateRequiredProp,
+} from './utils/errors';
+
 /**
  * An individual result from a roll-table.
  * Each value can be marked with optional
@@ -67,30 +75,14 @@ export class RollTableEntry implements IRollTableEntry, IAssignable, IValidatabl
      * @throws TypeErrors for invalid properties
      * @param props Incoming properties object
      */
-    public static strictValidateProps = (props:any, ind = 0):void => {
-      if(!props)
-        throw new TypeError(`RollTableEntry.StrictValidateProps requires a valid parameter to check, none was given.`);
+    public static strictValidateProps = (props:any):void => {
+      strictValidatePropsParameter(props, 'RollTableEntry');
 
-      if(!props.body)
-        throw new TypeError(`RollTableEntry[${ind}] requires a "body" object, none was found.`);
-      if(typeof props.body !== 'object' || Array.isArray(props.body))
-        throw new TypeError(`RollTableEntry[${ind}] requires an object for "body", but ${typeof props.body} was found instead.`);
-      TextBlock.strictValidateProps(props.body);
-
-      if(props.value) {
-        if(!testIfPositiveInteger(props.value))
-          throw new TypeError(`RollTableEntry[${ind}] "value" property must be a positive integer.`);
-      }
-
-      if(props.minimumValue) {
-        if(!testIfPositiveInteger(props.minimumValue))
-          throw new TypeError(`RollTableEntry[${ind}] "minimumValue" property must be a positive integer.`);
-      }
-
-      if(props.maximumValue) {
-        if(!testIfPositiveInteger(props.maximumValue))
-          throw new TypeError(`RollTableEntry[${ind}] "maximumValue" property must be a positive integer.`);
-      }
+      strictValidateRequiredObjectProp(props, 'RollTableEntry', 'body', TextBlock.strictValidateProps);
+      strictValidateRequiredProp(props, 'RollTableEntry', 'value', 'number');
+      strictValidateOptionalProp(props, 'RollTableEntry', 'minimumValue', 'number');
+      strictValidateOptionalProp(props, 'RollTableEntry', 'maximumValue', 'number');
+      strictValidateOptionalProp(props, 'RollTableEntry', 'title', 'string');
     }
 
     /**
@@ -281,21 +273,10 @@ export default class RollTable implements IRollTable, IAssignable, IValidatable 
      * @param props Incoming properties object
      */
     public static strictValidateProps = (props:any):void => {
-      if(!props)
-        throw new TypeError(`RollTable.StrictValidateProps requires a valid parameter to check, none was given.`);
-    
-      if(!props.die)
-        throw new TypeError(`Missing "die" property for RollTable.`);
-      if(typeof props.die !== 'string')
-        throw new TypeError(`RollTable.die should be a string, instead found "${typeof props.die}".`);
-      if(!dieSizeHas(props.die))
-        throw new TypeError(`RollTable.die property must be a valid die size enum, "${props.die}" is not one.`);
-    
-      if(!props.results)
-        throw new TypeError(`Missing "results" property for RollTable.`);
-      if(typeof props.results !== 'object' || Array.isArray(props.results) === false)
-        throw new TypeError(`RollTable.results should be an array, instead found "${typeof props.results}"`);
-      props.results.forEach(RollTableEntry.strictValidateProps);
+      strictValidatePropsParameter(props, 'RollTable');
+
+      strictValidateRequiredProp(props, 'RollTable', 'die', 'string');
+      strictValidateRequiredArrayProp(props, 'RollTable', 'results', RollTableEntry.strictValidateProps);
     }
  
     /**

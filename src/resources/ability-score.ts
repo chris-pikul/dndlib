@@ -7,6 +7,11 @@ import {
   IValidatable,
   JSONObject,
 } from '../interfaces';
+import {
+  strictValidateOptionalArrayProp,
+  strictValidatePropsParameter,
+  strictValidateRequiredProp,
+} from '../utils/errors';
 
 /**
  * Mechanical rule describing an ability that a character can have.
@@ -43,20 +48,10 @@ export default class AbilityScore extends Resource implements IAbilityScore, IAs
    * @param props Incoming properties object
    */
   public static readonly strictValidateProps = (props:any):void => {
-    if(!props)
-      throw new TypeError(`AbilityScore.StrictValidateProps requires a valid parameter to check, none was given.`);
-    
-    if(!props.abbreviation)
-      throw new TypeError(`Missing "abbreviation" property for AbilityScore.`);
-    if(typeof props.abbreviation !== 'string')
-      throw new TypeError(`AbilityScore "abbreviation" property must be a string, instead found "${typeof props.abbreviation}".`);
-    
-    if(props.skills) {
-      if(!Array.isArray(props.skills))
-        throw new TypeError(`AbilityScore "skills" property must be an array, instead found "${typeof props.skills}".`);
-      
-      props.skills.forEach(ReferenceSkill.strictValidateProps);
-    }
+    strictValidatePropsParameter(props, 'AbilityScore');
+
+    strictValidateRequiredProp(props, 'AbilityScore', 'abbreviation', 'string');
+    strictValidateOptionalArrayProp(props, 'AbilityScore', 'skills', ReferenceSkill.strictValidateProps);
   }
   
   /**
@@ -87,20 +82,14 @@ export default class AbilityScore extends Resource implements IAbilityScore, IAs
     });
 
     if(props) {
-      if(props instanceof AbilityScore) {
+      if(isPlainObject(props) || props instanceof AbilityScore) {
         // Copy over the properties
         AbilityScore.strictValidateProps(props);
+
         this.abbreviation = props.abbreviation;
-        this.skills = [ ...props.skills ];
-      } else if(isPlainObject(props)) {
-        // JSON object
-        AbilityScore.strictValidateProps(props);
-
-        if(props.abbreviation && typeof props.abbreviation === 'string')
-          this.abbreviation = props.abbreviation;
-
-        if(props.skills && Array.isArray(props.skills))
-          this.skills = [ ...props.skills ];
+        
+        if(props.skills)
+          this.skills = props.skills.map((ent:ReferenceSkill) => new ReferenceSkill(ent));
       } else if(typeof props === 'string') {
         this.abbreviation = props.toLocaleUpperCase().trim();
       } else {
