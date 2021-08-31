@@ -2,12 +2,7 @@
  * Copyright(C) 2021 Chris Pikul. Under MIT license. 
  * See "LICENSE" in the root project folder.
  */
-import {
-  IAssignable,
-  IValidatable,
-  JSONObject,
-  StringArray,
-} from './interfaces';
+import { IValidatable } from './interfaces';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
 import TextBlock from './text-block';
@@ -99,7 +94,7 @@ export interface IResourceClassProps {
  * 
  * Schema: /resource.schema.json
  */
-export default abstract class Resource implements IResource, IAssignable, IValidatable {
+export default abstract class Resource implements IResource, IValidatable {
     /**
      * Performs type checking and throws errors if the
      * properties needed are not the right types.
@@ -229,26 +224,6 @@ export default abstract class Resource implements IResource, IAssignable, IValid
             this.uri = `${classProps.uriBase}/${props.id}`;
         }
       }
-    }
-
-    assign = (props:JSONObject):void => {
-      if(props.id && typeof props.id === 'string' && props.id.length > 0)
-        this.id = props.id;
-
-      if(props.uri && typeof props.uri === 'string' && props.uri.length > 0)
-        this.uri = props.uri;
-
-      if(props.name && typeof props.name === 'string' && props.name.length > 0)
-        this.name = props.name;
-            
-      if(props.description && props.description)
-        this.description.assign(props.description as JSONObject);
-
-      if(props.source && props.source)
-        this.source.assign(props.source as JSONObject);
-
-      if(props.tags && props.tags && Array.isArray(props.tags))
-        this.tags = props.tags.filter((ent:any) => (typeof ent === 'string' && ent.length > 0)) as StringArray;
     }
 
     validate = ():Array<string> => {
