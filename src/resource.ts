@@ -2,17 +2,25 @@
  * Copyright(C) 2021 Chris Pikul. Under MIT license. 
  * See "LICENSE" in the root project folder.
  */
-import { IValidatable } from './interfaces';
+import type {
+  IValidatable,
+  PromiseValidation,
+  ValidationErrors,
+} from './interfaces';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
 import TextBlock from './text-block';
 import Source, { ISource } from './source';
 
 import {
-  inPlaceConcat,
-  testURI,
   testKabob,
   isPlainObject,
+  validateEnum,
+  validateString,
+  RegexpKabob,
+  RegexpURI,
+  validateObject,
+  validateArray,
 } from './utils';
 
 import {
@@ -226,48 +234,32 @@ export default abstract class Resource implements IResource, IValidatable {
       }
     }
 
-    validate = ():Array<string> => {
+    validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
       const errs:Array<string> = [];
 
-      // Make sure there is a valid type
-      if(!resourceTypeHas(this.type))
-        errs.push(`Resource requires a valid "type" ResourceType enum. "${this.type}" is not one of them.`);
-      else if(this.type === ResourceType.UNKNOWN)
-        errs.push(`Resource should have a valid ResourceType, it is currently "UNKNOWN".`);
+      validateEnum(errs, 'Resource', 'type', this.type, ResourceType);
+      validateString(errs, 'Resource', 'id', this.id, { regexp: RegexpKabob });
+      validateString(errs, 'Resource', 'uri', this.uri, { regexp: RegexpURI });
+      validateString(errs, 'Resource', 'name', this.name);
+      validateObject(errs, 'Resource', 'description', this.description, this.description.validate);
+      validateObject(errs, 'Resource', 'source', this.source, this.source.validate);
+      validateArray(errs, 'Resource', 'tags', this.tags, (prop:any, ind:number):ValidationErrors => {
+        const subErrs:ValidationErrors = [];
 
-      // Ensure the ID is filled
-      if(this.id.length < 1)
-        errs.push(`Resource expected "id" to be a string of at least 1 character long.`);
+        if(prop) {
+          if(typeof prop !== 'string')
+            subErrs.push(`Resource.tags[${ind}] is not a string type, instead found "${typeof prop}".`);
+          else if(testKabob(prop) === false)
+            subErrs.push(`Resource.tags[${ind}] "${prop}" does not match the kabob format.`);
+        } else {
+          subErrs.push(`Resource.tags[${ind}] is a required string.`);
+        }
 
-      /*
-       * URI's need to be valid and filled out, the starting
-       * character should be a forward slash to help declare the type
-       */
-      if(this.uri.length < 1)
-        errs.push(`Resource requires a valid (non-empty) URI string.`);
-      else if(!testURI(this.uri))
-        errs.push(`Resource URI format is invalid. Check that it starts with a forward slash, and is only alphanumeric path segments`);
-
-      // Check that the name is at least filled out
-      if(this.name.length < 1)
-        errs.push(`Resource requires a valid (non-empty) "name" string`);
-
-      // Pass on validation of description
-      inPlaceConcat(errs, this.description.validate());
-
-      // Pass on validation of source
-      inPlaceConcat(errs, this.source.validate());
-
-      // Check the tag formats
-      this.tags.forEach((tag:string, ind:number) => {
-        if(typeof tag !== 'string' || tag.length === 0)
-          errs.push(`Resource tag[${ind}] should be a non-empty string.`);
-        else if(!testKabob(tag))
-          errs.push(`Resource tag[${ind}] should be a kabob-case string.`);
+        return subErrs;
       });
 
-      return errs;
-    }
+      resolve(errs);
+    });
 
-    isValid = ():boolean => (this.validate().length === 0);
+    isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
 }

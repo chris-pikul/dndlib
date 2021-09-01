@@ -1,6 +1,13 @@
 export type ValidationErrors = Array<string>;
 
 /**
+ * A promise of validation.
+ * These promises SHOULD NOT reject, and instead they resolve to the array
+ * of error strings. In this case, an empty return is considered passing.
+ */
+export type PromiseValidation = Promise<ValidationErrors>;
+
+/**
  * Allows the object to have its data validated
  */
 export interface IValidatable {
@@ -10,7 +17,7 @@ export interface IValidatable {
      * Returns an array of error messages if any where encountered.
      * @returns string[] of errors if any where found
      */
-    validate():ValidationErrors;
+    validate():PromiseValidation;
 
     /**
      * Performs a validation sweep on the properties within.
@@ -19,7 +26,7 @@ export interface IValidatable {
      * so it isn't any more performant then the standard validate().
      * @returns boolean true if the object is ok
      */
-    isValid():boolean;
+    isValid():Promise<boolean>;
 }
 
 /**

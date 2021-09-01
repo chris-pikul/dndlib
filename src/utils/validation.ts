@@ -17,7 +17,7 @@ import { isPlainObject } from './json-object';
  * Passes: /some/v4lu3s-go/here
  * Fails: no/prefix/and/$ymbols
  */
-const RegexpURI = /^(?:\/[a-z0-9\-_]+)+$/gi;
+export const RegexpURI = /^(?:\/[a-z0-9\-_]+)+$/gi;
 
 /**
  * Tests that the given input is a string and
@@ -40,7 +40,7 @@ export function testURI(input:string, allowEmpty = false):boolean {
  * Passes: any-values01-here
  * Fails: Caps_and-symbols
  */
-const RegexpKabob = /^[a-z0-9-]+$/g;
+export const RegexpKabob = /^[a-z0-9-]+$/g;
 
 /**
  * Tests that the given input is a string and
