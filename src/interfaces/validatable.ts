@@ -28,3 +28,10 @@ export interface IValidatable {
  * down.
  */
 export type ValidateArrayCB = (prop:any, ind?:number) => ValidationErrors;
+
+/**
+ * Callback signature for the function used in validating object properties.
+ * Should return it's own immutable array of errors that will be processed
+ * down.
+ */
+export type ValidateObjectCB = (prop:any) => ValidationErrors;
