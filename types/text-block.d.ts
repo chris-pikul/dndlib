@@ -69,13 +69,13 @@ export default class TextBlock implements ITextBlock, IAssignable, IValidatable 
     /**
      * A markdown (commonmark) formatted version.
      */
-    markdown: StringArray;
+    markdown?: StringArray;
     /**
      * An HTML version. The text should be escapped
      * properly for JSON. And should only contain
      * formatting elements such as B, I, U, Em, etc.
      */
-    html: StringArray;
+    html?: StringArray;
     constructor(props?: any);
     assign: (props: JSONObject) => void;
     validate: () => Array<string>;

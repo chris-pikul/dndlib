@@ -28,6 +28,7 @@ export declare enum AlignmentEntropy {
     NEUTRAL = "NEUTRAL",
     LAWFUL = "LAWFUL"
 }
+export declare const alignmentEntropyHas: (key: string) => boolean;
 /**
  * The morality axis of the alignment.
  * Can be either good, neutral, or evil.
@@ -37,6 +38,7 @@ export declare enum AlignmentMorality {
     NEUTRAL = "NEUTRAL",
     EVIL = "EVIL"
 }
+export declare const alignmentMoralityHas: (key: string) => boolean;
 /**
  * Holds the two axes of alignment as one value.
  * These are entropy, and morality.

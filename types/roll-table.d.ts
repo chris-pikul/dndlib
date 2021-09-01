@@ -40,7 +40,7 @@ export declare class RollTableEntry implements IRollTableEntry, IAssignable, IVa
      * @throws TypeErrors for invalid properties
      * @param props Incoming properties object
      */
-    static strictValidateProps: (props: any, ind?: number) => void;
+    static strictValidateProps: (props: any) => void;
     /**
      * A specific value to match against during checking.
      * This is the prefered method if provided.

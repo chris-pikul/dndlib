@@ -1,6 +1,8 @@
 /**
  * Describes the value of something, or a general ammount of monetary
  * treasure.
+ *
+ * Schema: /currency.schema.json
  */
 export interface ICurrency {
     copper?: number;
@@ -12,6 +14,8 @@ export interface ICurrency {
 /**
  * Describes an amount of money, or currency. Breaks the values down between
  * the denominations copper, silver, electrum, gold, and platinum.
+ *
+ * Schema: /currency.schema.json
  */
 export default class Currency implements ICurrency {
     /**

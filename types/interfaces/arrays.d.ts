@@ -19,3 +19,16 @@ export declare type CountedArrayElem<Type> = {
  * is expected to be an enum.
  */
 export declare type CountedArray<Type> = Array<CountedArrayElem<Type>>;
+/**
+ * Signature for a standard Array.forEach() callback.
+ */
+export declare type ArrayIteratorCB = (prop: any, ind?: number) => void;
+/**
+ * Signature for a standard Array.map() callback.
+ */
+export declare type ArrayMapIteratorCB<InputType = any, ReturnType = any> = (props: InputType, ind?: number) => ReturnType;
+/**
+ * Signature for a finding operation like Array.find() or Array.includes()
+ * callback.
+ */
+export declare type ArrayBooleanIteratorCB<InputType = any> = (props: InputType, ind?: number) => boolean;

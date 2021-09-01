@@ -1,4 +1,4 @@
-import { IAssignable, IValidatable, JSONObject } from './interfaces';
+import { IValidatable } from './interfaces';
 import { ResourceType } from './resource-type';
 import TextBlock from './text-block';
 import Source, { ISource } from './source';
@@ -56,17 +56,23 @@ export interface IResource {
      */
     tags: Array<string>;
 }
+export interface IResourceClassProps {
+    type?: ResourceType;
+    uriBase?: string;
+}
 /**
  * An abstract class representing the basis of any resource.
  *
  * Schema: /resource.schema.json
  */
-export default abstract class Resource implements IResource, IAssignable, IValidatable {
+export default abstract class Resource implements IResource, IValidatable {
     /**
      * Performs type checking and throws errors if the
      * properties needed are not the right types.
+     *
      * Does not fully validate the data within them,
      * but will check for emptyness, or incorrect Enums
+     *
      * @throws TypeErrors for invalid properties
      * @param props Incoming properties object
      */
@@ -120,8 +126,16 @@ export default abstract class Resource implements IResource, IAssignable, IValid
      * The id does not need to be supplied as a tag.
      */
     tags: Array<string>;
-    constructor(props?: any, classProps?: JSONObject);
-    assign: (props: JSONObject) => void;
+    /**
+     * Constructs a new Resource object.
+     *
+     * The optional classProps parameter allows for child classes to
+     * set up the base properties for their own types.
+     *
+     * @param props Resource|Object properties to copy
+     * @param classProps IResourceClassProps additional properties to override
+     */
+    constructor(props?: any, classProps?: IResourceClassProps);
     validate: () => Array<string>;
     isValid: () => boolean;
 }
