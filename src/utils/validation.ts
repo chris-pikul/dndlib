@@ -79,6 +79,54 @@ export const testIfMultipleOf = (input:number, multiplier:number):boolean => (
   (input % multiplier) === 0
 );
 
+export const validateIntegerOptionsD2 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 2,
+};
+
+export const validateIntegerOptionsD4 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 4,
+};
+
+export const validateIntegerOptionsD6 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 6,
+};
+
+export const validateIntegerOptionsD8 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 8,
+};
+
+export const validateIntegerOptionsD10 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 10,
+};
+
+export const validateIntegerOptionsD12 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 12,
+};
+
+export const validateIntegerOptionsD20 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 20,
+};
+
+export const validateIntegerOptionsD100 = {
+  positive: true,
+  minValue: 1,
+  maxValue: 100,
+};
+
 /**
  * Adds validation errors for the given property to the supplied array of
  * errors. This operation acts IN PLACE and is not immutable.
@@ -290,11 +338,15 @@ export const validateArray = (
     newErrs.push(`${className}.${propName} is a required array.`);
 
   if(prop) {
-    if(Array.isArray(prop)) {
-      const subErrs = prop.map(cb).filter((ent:ValidationErrors) => ent.length > 0);
-      inPlaceConcat<string>(newErrs, ...subErrs);
+    if(typeof cb === 'function') {
+      if(Array.isArray(prop)) {
+        const subErrs = prop.map(cb).filter((ent:ValidationErrors) => ent.length > 0);
+        inPlaceConcat<string>(newErrs, ...subErrs);
+      } else {
+        newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+      }
     } else {
-      newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+      newErrs.push(`${className}.${propName} attempted to validate as an array with an invalid callback function.`);
     }
   }
 
@@ -331,10 +383,14 @@ export const validateObject = (
     newErrs.push(`${className}.${propName} is a required object.`);
 
   if(prop) {
-    if(isPlainObject(prop))
-      newErrs.push(...cb(prop));
-    else
-      newErrs.push(`${className}.${propName} should be an object type, instead found "${typeof prop}".`);
+    if(typeof cb === 'function') {
+      if(isPlainObject(prop))
+        newErrs.push(...cb(prop));
+      else
+        newErrs.push(`${className}.${propName} should be an object type, instead found "${typeof prop}".`);
+    } else {
+      newErrs.push(`${className}.${propName} attempted to validate as an object with an invalid callback function.`);
+    }
   }
 
   inPlaceConcat<string>(errs, newErrs);
@@ -373,14 +429,18 @@ export const validateArrayOfObjects = (
     newErrs.push(`${className}.${propName} is a required array.`);
 
   if(prop) {
-    if(Array.isArray(prop)) {
-      prop.forEach((ent:any, ind:number) => {
-        const entErrs = cb(ent);
-        if(entErrs.length > 0)
-          newErrs.push(...entErrs.map((err:string) => `${className}.${propName}[${ind}]: ${err}`));
-      });
+    if(typeof cb === 'function') {
+      if(Array.isArray(prop)) {
+        prop.forEach((ent:any, ind:number) => {
+          const entErrs = cb(ent);
+          if(entErrs.length > 0)
+            newErrs.push(...entErrs.map((err:string) => `${className}.${propName}[${ind}]: ${err}`));
+        });
+      } else {
+        newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+      }
     } else {
-      newErrs.push(`${className}.${propName} should be an array type, instead found "${typeof prop}".`);
+      newErrs.push(`${className}.${propName} attempted to validate as an array of objects with an invalid callback function.`);
     }
   }
 
