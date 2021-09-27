@@ -6,11 +6,19 @@ import {
   IValidatable,
   IAssignable,
   JSONObject,
+  PromiseValidation,
+  ValidationErrors,
 } from './interfaces';
 
 import { ResourceType, resourceTypeHas } from './resource-type';
 
-import { isPlainObject, testURI } from './utils';
+import {
+  isPlainObject,
+  RegexpURI,
+  validateEnum,
+  validateString,
+} from './utils';
+
 import {
   strictValidateOptionalProp,
   strictValidatePropsParameter,
@@ -144,22 +152,28 @@ export default class Reference implements IReference, IAssignable, IValidatable 
         this.name = props.name;
     }
 
-    validate = ():string[] => {
-      const errs:Array<string> = [];
-        
+    validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+      resolve(this.validateSync());
+    });
+
+    validateSync = ():ValidationErrors => {
+      const clsName = this.constructor.name;
+      const errs:ValidationErrors = [];
+
+      validateEnum(errs, clsName, 'type', this.type, ResourceType);
       if(this.type === ResourceType.UNKNOWN)
-        errs.push(`References cannot have empty or unknown types`);
+        errs.push(`${clsName}.type should not be "UNKNOWN", and instead should be a valid ResourceType enumeration.`);
 
-      if(!testURI(this.uri))
-        errs.push(`References must have a valid uri string`);
+      validateString(errs, clsName, 'uri', this.uri, { regexp: RegexpURI });
 
-      if(typeof this.name !== 'string' || this.name.length < 1)
-        errs.push(`References must have a valid (non-empty) string name`);
+      validateString(errs, clsName, 'name', this.name);
 
       return errs;
-    }
+    };
 
-    isValid = ():boolean => (this.validate().length === 0);
+    isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
+
+    isValidSync = ():boolean => (this.validateSync().length === 0);
 
     isZeroValue = ():boolean => (Reference.isZeroValue(this));
 }

@@ -103,23 +103,32 @@ export default class AbilityScore extends Resource implements IAbilityScore, IVa
   }
 
   validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
-    super.validate().then((errs:ValidationErrors) => {
-      validateString(errs, 'AbilityScore', 'abbreviation', this.abbreviation, { absLength: 3 });
-
-      validateArray(errs, 'AbilityScore', 'skills', this.skills, (prop:any, ind:number):ValidationErrors => {
-        if(prop) {
-          if(prop instanceof ReferenceSkill)
-            return prop.validate().map((err:string) => `AbilityScore.skills[${ind}]: ${err}`);
-          
-          return [ `AbilityScore.skills[${ind}] should be a ReferenceSkill object.` ];
-        }
-
-        return [ `AbilityScore.skills[${ind}] is null or undefined.` ];
-      }, true);
-
-      resolve(errs);
+    super.validate().then((supErrs:ValidationErrors) => {
+      /*
+       * Use the validateSync option and combine with the super errors.
+       * We use the parameter here to let the super validation be async and then
+       * feed that into this version of validateSync().
+       */
+      resolve(this.validateSync(supErrs));
     });
   });
 
-  isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
+  validateSync = (parentErrs?:ValidationErrors):ValidationErrors => {
+    const errs = parentErrs ?? super.validateSync();
+
+    validateString(errs, 'AbilityScore', 'abbreviation', this.abbreviation, { absLength: 3 });
+
+    validateArray(errs, 'AbilityScore', 'skills', this.skills, (prop:any, ind:number):ValidationErrors => {
+      if(prop) {
+        if(prop instanceof ReferenceSkill)
+          return prop.validateSync().map((err:string) => `AbilityScore.skills[${ind}]: ${err}`);
+        
+        return [ `AbilityScore.skills[${ind}] should be a ReferenceSkill object.` ];
+      }
+
+      return [ `AbilityScore.skills[${ind}] is null or undefined.` ];
+    }, true);
+
+    return errs;
+  };
 }

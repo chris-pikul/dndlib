@@ -235,31 +235,38 @@ export default abstract class Resource implements IResource, IValidatable {
     }
 
     validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
-      const errs:Array<string> = [];
+      resolve(this.validateSync());
+    });
 
-      validateEnum(errs, 'Resource', 'type', this.type, ResourceType);
-      validateString(errs, 'Resource', 'id', this.id, { regexp: RegexpKabob });
-      validateString(errs, 'Resource', 'uri', this.uri, { regexp: RegexpURI });
-      validateString(errs, 'Resource', 'name', this.name);
-      validateObject(errs, 'Resource', 'description', this.description, this.description.validate);
-      validateObject(errs, 'Resource', 'source', this.source, this.source.validate);
-      validateArray(errs, 'Resource', 'tags', this.tags, (prop:any, ind:number):ValidationErrors => {
+    validateSync = ():ValidationErrors => {
+      const clsName = this.constructor.name ?? 'Resource';
+      const errs:ValidationErrors = [];
+
+      validateEnum(errs, clsName, 'type', this.type, ResourceType);
+      validateString(errs, clsName, 'id', this.id, { regexp: RegexpKabob });
+      validateString(errs, clsName, 'uri', this.uri, { regexp: RegexpURI });
+      validateString(errs, clsName, 'name', this.name);
+      validateObject(errs, clsName, 'description', this.description, this.description.validate);
+      validateObject(errs, clsName, 'source', this.source, this.source.validate);
+      validateArray(errs, clsName, 'tags', this.tags, (prop:any, ind:number):ValidationErrors => {
         const subErrs:ValidationErrors = [];
 
         if(prop) {
           if(typeof prop !== 'string')
-            subErrs.push(`Resource.tags[${ind}] is not a string type, instead found "${typeof prop}".`);
+            subErrs.push(`${clsName}.tags[${ind}] is not a string type, instead found "${typeof prop}".`);
           else if(testKabob(prop) === false)
-            subErrs.push(`Resource.tags[${ind}] "${prop}" does not match the kabob format.`);
+            subErrs.push(`${clsName}.tags[${ind}] "${prop}" does not match the kabob format.`);
         } else {
-          subErrs.push(`Resource.tags[${ind}] is a required string.`);
+          subErrs.push(`${clsName}.tags[${ind}] is a required string.`);
         }
 
         return subErrs;
       });
 
-      resolve(errs);
-    });
+      return errs;
+    };
 
     isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
+
+    isValidSync = ():boolean => (this.validateSync().length === 0);
 }

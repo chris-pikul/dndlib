@@ -190,6 +190,7 @@ export const validateString = (
     maxLength?:number,
     absLength?:number,
     regexp?:RegExp,
+    func?:((input:string) => boolean),
   }) = {},
   optional = false,
 ):void => {
@@ -201,6 +202,8 @@ export const validateString = (
   if(prop) {
     if(typeof prop !== 'string') {
       newErrs.push(`${className}.${propName} should be a string type, instead found "${typeof prop}".`);
+    } else if(options.func && options.func(prop) === false) {
+      newErrs.push(`${className}.${propName} failed the functional string test.`);
     } else if(options.regexp && options.regexp.test(prop) === false) {
       newErrs.push(`${className}.${propName} failed the regular expression test "${options.regexp.toString()}".`);
     } else if(options.absLength) {
