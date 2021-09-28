@@ -1,11 +1,14 @@
 import Resource from '../resource';
+
 import Reference, {
   ReferenceAbilityScore,
   ReferenceClass,
   ReferenceDamageType,
   ReferenceMagicSchool,
 } from '../reference';
+
 import { ResourceType } from '../resource-type';
+
 import {
   enumHas,
   isPlainObject,
@@ -17,9 +20,17 @@ import {
   validateObject,
   validateString,
 } from '../utils';
-import type { IValidatable, ValidationErrors } from '../interfaces';
+
+import type {
+  IValidatable,
+  PromiseValidation,
+  ValidationErrors,
+} from '../interfaces';
+
 import { Shape } from '../shape';
+
 import { Rarity } from '../rarity';
+
 import {
   strictValidateOptionalArrayProp,
   strictValidateOptionalObjectProp,
@@ -653,8 +664,19 @@ export default class Spell extends Resource implements ISpell, IValidatable {
     }
   }
 
-  validate = ():ValidationErrors => {
-    const errs:ValidationErrors = super.validate();
+  validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+    super.validate().then((supErrs:ValidationErrors) => {
+      /*
+       * Use the validateSync option and combine with the super errors.
+       * We use the parameter here to let the super validation be async and then
+       * feed that into "this" version of validateSync().
+       */
+      resolve(this.validateSync(supErrs));
+    });
+  });
+
+  validateSync = (parentErrs?:ValidationErrors):ValidationErrors => {
+    const errs = parentErrs ?? super.validateSync();
 
     validateInteger(errs, 'Spell', 'level', this.level, {
       positive: true,
@@ -680,10 +702,10 @@ export default class Spell extends Resource implements ISpell, IValidatable {
       return [];
     }, true);
     validateObject(errs, 'Spell', 'areaOfEffect', this.areaOfEffect, this.validateAreaOfEffect, true);
-    validateObject(errs, 'Spell', 'school', this.school, this.school.validate);
+    validateObject(errs, 'Spell', 'school', this.school, this.school.validateSync);
     validateArrayOfObjects(errs, 'Spell', 'classes', this.classes, (prop:any):ValidationErrors => {
       if(prop instanceof ReferenceClass)
-        return prop.validate();
+        return prop.validateSync();
       return [ `supplied object is not a ReferenceClass object.` ];
     });
     validateObject(errs, 'Spell', 'scroll', this.scroll, this.validateScroll, true);
@@ -720,10 +742,10 @@ export default class Spell extends Resource implements ISpell, IValidatable {
   validateDamage = (dmg:ISpellDamage):ValidationErrors => {
     const errs:ValidationErrors = [];
 
-    validateObject(errs, 'Spell::Damage', 'type', dmg.type, dmg.type.validate);
+    validateObject(errs, 'Spell::Damage', 'type', dmg.type, dmg.type.validateSync);
     validateArrayOfObjects(errs, 'Spell::Damage', 'options', dmg.options, (prop:any):ValidationErrors => {
       if(prop instanceof Reference)
-        return (prop as Reference).validate();
+        return (prop as Reference).validateSync();
       return [ 'supplied object is not a Reference object.' ];
     }, true);
     validateString(errs, 'Spell::Damage', 'baseAmount', dmg.baseAmount, { regexp: Spell.regexpDiceCalculation });
@@ -756,7 +778,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
   validateSave = (save:ISpellSave):ValidationErrors => {
     const errs:ValidationErrors = [];
 
-    validateObject(errs, 'Spell::Save', 'ability', save.ability, save.ability.validate);
+    validateObject(errs, 'Spell::Save', 'ability', save.ability, save.ability.validateSync);
     validateString(errs, 'Spell::Save', 'success', save.success, null, true);
     validateString(errs, 'Spell::Save', 'failure', save.failure, null, true);
 
@@ -798,6 +820,4 @@ export default class Spell extends Resource implements ISpell, IValidatable {
 
     return errs;
   }
-
-  isValid = ():boolean => (this.validate().length === 0);
 }
