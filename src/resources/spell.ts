@@ -381,9 +381,8 @@ export type RarityMap<Type> = {
 export type EnchantmentRules = {
   rarity:Array<Rarity>,
   minLevel:RarityMap<number>,
-  baseCost:RarityMap<number>,
   days:RarityMap<number>,
-  calcCost:(spell:ISpell) => number,
+  cost:(spell:ISpell) => number,
 };
 
 export default class Spell extends Resource implements ISpell, IValidatable {
@@ -645,14 +644,6 @@ export default class Spell extends Resource implements ISpell, IValidatable {
       LEGENDARY: 17,
       ARTIFACT: 20,
     },
-    baseCost: {
-      COMMON: 100,
-      UNCOMMON: 500,
-      RARE: 5000,
-      VERY_RARE: 50000,
-      LEGENDARY: 500000,
-      ARTIFACT: 1000000,
-    },
     days: {
       COMMON: 4,
       UNCOMMON: 20,
@@ -661,10 +652,18 @@ export default class Spell extends Resource implements ISpell, IValidatable {
       LEGENDARY: 20000,
       ARTIFACT: 40000,
     },
-    calcCost: (spl:ISpell):number => {
+    cost: (spl:ISpell):number => {
+      const baseCost = {
+        COMMON: 100,
+        UNCOMMON: 500,
+        RARE: 5000,
+        VERY_RARE: 50000,
+        LEGENDARY: 500000,
+        ARTIFACT: 1000000,
+      };
       const rarity = Spell.defaultEnchantmentRules.rarity[spl.level];
       const days = Spell.defaultEnchantmentRules.days[rarity];
-      return Spell.defaultEnchantmentRules.baseCost[rarity] + (spl.components.goldValue * days);
+      return baseCost[rarity] + (spl.components.goldValue * days);
     },
   }
 
@@ -832,7 +831,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
 
     this.enchanting = {
       minLevel: rules.minLevel[rarity],
-      cost: rules.calcCost(this),
+      cost: rules.cost(this),
       days: rules.days[rarity],
     };
 
