@@ -3,11 +3,12 @@
  * See "LICENSE" in the root project folder.
  */
 import {
-  IAssignable,
   IValidatable,
-  JSONObject,
+  PromiseValidation,
   StringArray,
+  ValidationErrors,
 } from './interfaces';
+import { validateArray } from './utils';
 
 import {
   strictValidateOptionalArrayProp,
@@ -62,24 +63,7 @@ export interface ITextBlock {
  * 
  * Schema: /text-block.schema.json
  */
-export default class TextBlock implements ITextBlock, IAssignable, IValidatable {
-    /**
-     * Holds the "Zero" value (empty, null) for easy reference
-     * and object instantiation.
-     */
-    public static readonly ZERO_VALUE:TextBlock = new TextBlock();
-
-    /**
-     * Checks if the supplied object is at the class's zero value.
-     * @param obj TextBlock object to check
-     * @returns True if the object has the default values
-     */
-    public static isZeroValue = (obj:TextBlock):boolean => (
-      obj.plainText.length === 0
-        && !obj.markdown.length
-        && !obj.html.length
-    );
-
+export default class TextBlock implements ITextBlock, IValidatable {
     /**
      * Performs type checking and throws errors if the
      * properties needed are not the right types.
@@ -120,74 +104,52 @@ export default class TextBlock implements ITextBlock, IAssignable, IValidatable 
         if(isPlainObject(props) || props instanceof TextBlock) {
           TextBlock.strictValidateProps(props);
 
-          this.plainText = [ ...props.plainText ];
+          this.plainText = props.plainText.filter((ent:any) => (ent && typeof ent === 'string'));
 
           if(props.markdown)
-            this.markdown = [ ...props.markdown ];
+            this.markdown = props.markdown.filter((ent:any) => (ent && typeof ent === 'string'));
           
           if(props.html)
-            this.html = [ ...props.html ];
+            this.html = props.html.filter((ent:any) => (ent && typeof ent === 'string'));
         } else {
           console.warn(`Attempting to instantiate a TextBody object with an invalid parameter. Expected either a TextBody object, or a plain JSON Object of properties. Instead encountered a "${typeof props}"`);
         }
       }
     }
 
-    assign = (props:JSONObject):void => {
-      if(props.plainText && Array.isArray(props.plainText)) {
-        /*
-         * The filter should handle the case of ensuring strings,
-         * so I will explicitly cast the results
-         */
-        this.plainText = props.plainText.filter(ent => (ent && typeof ent === 'string')) as StringArray;
-      }
-    
-      if(props.markdown && Array.isArray(props.markdown)) {
-        /*
-         * The filter should handle the case of ensuring strings,
-         * so I will explicitly cast the results
-         */
-        this.markdown = props.markdown.filter(ent => (ent && typeof ent === 'string')) as StringArray;
-      }
-    
-      if(props.html && Array.isArray(props.html)) {
-        /*
-         * The filter should handle the case of ensuring strings,
-         * so I will explicitly cast the results
-         */
-        this.html = props.html.filter(ent => (ent && typeof ent === 'string')) as StringArray;
-      }
-    }
+    validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+      resolve(this.validateSync());
+    });
 
-    validate = ():Array<string> => {
-      const errs:Array<string> = [];
+    validateSync = ():ValidationErrors => {
+      const errs:ValidationErrors = [];
 
-      if(this.plainText.length === 0)
+      if(this.plainText.length === 0) {
         errs.push(`TextBlock.plainText requires at least one entry, none found.`);
+      } else {
+        validateArray(errs, 'TextBlock', 'plainText', this.plainText, (ent:any, ind:number) => {
+          if(!ent || typeof ent !== 'string')
+            return [ `TextBlock.plainText[${ind}] is a "${typeof ent}", expected a string.` ];
+          return [];
+        });
+      }
 
-      this.plainText.forEach((ent:string, ind:number) => {
+      validateArray(errs, 'TextBlock', 'markdown', this.markdown, (ent:any, ind:number) => {
         if(!ent || typeof ent !== 'string')
-          errs.push(`TextBlock.plainText[${ind}] is a "${typeof ent}", expected a string.`);
-      });
+          return [ `TextBlock.markdown[${ind}] is a "${typeof ent}", expected a string.` ];
+        return [];
+      }, true);
 
-      this.markdown.forEach((ent:string, ind:number) => {
+      validateArray(errs, 'TextBlock', 'html', this.html, (ent:any, ind:number) => {
         if(!ent || typeof ent !== 'string')
-          errs.push(`TextBlock.markdown[${ind}] is a "${typeof ent}", expected a string.`);
-      });
-
-      this.html.forEach((ent:string, ind:number) => {
-        if(!ent || typeof ent !== 'string')
-          errs.push(`TextBlock.html[${ind}] is a "${typeof ent}", expected a string.`);
-      });
+          return [ `TextBlock.html[${ind}] is a "${typeof ent}", expected a string.` ];
+        return [];
+      }, true);
 
       return errs;
     }
 
-    isValid = ():boolean => (this.validate().length === 0);
+    isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
 
-    /**
-     * Checks if this object is at the class's zero value.
-     * @returns True if the this has the default values
-     */
-    isZeroValue = ():boolean => (TextBlock.isZeroValue(this));
+    isValidSync = ():boolean => (this.validateSync().length === 0);
 }

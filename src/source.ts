@@ -3,16 +3,21 @@
  * See "LICENSE" in the root project folder.
  */
 import {
-  IAssignable,
   IValidatable,
   JSONObject,
+  PromiseValidation,
+  ValidationErrors,
 } from './interfaces';
 
 import {
   StringEnum,
   enumHas,
   isPlainObject,
-  testIfPositiveInteger,
+  validateEnum,
+  validateString,
+  validateInteger,
+  validateBoolean,
+  validateArrayOfObjects,
 } from './utils';
 
 import {
@@ -137,7 +142,7 @@ export interface ISource {
  * 
  * Schema: /source.schema.json
  */
-export default class Source implements ISource, IAssignable, IValidatable {
+export default class Source implements ISource, IValidatable {
     /**
      * A string-string map of publication ID enums to their respective 
      * human-readable titles.
@@ -172,26 +177,6 @@ export default class Source implements ISource, IAssignable, IValidatable {
      * @returns The full publication title string
      */
     public static getPublicationTitle = (publicationID:PublicationID):string => (Source.PublicationMap[publicationID as string] || 'Unknown');
-
-    /**
-     * Holds the "Zero" value (empty, null) for easy reference
-     * and object instantiation.
-     */
-    public static readonly ZERO_VALUE:Source = new Source();
-
-    /**
-     * Checks if the supplied object is at the class's zero value.
-     * @param obj Source object to check
-     * @returns True if the object has the default values
-     */
-    public static isZeroValue = (obj:Source):boolean => (
-      obj.publicationID === PublicationID.HB
-        && obj.title === 'Unknown Source'
-        && obj.page === 0
-        && obj.isUA === false
-        && obj.isSRD === false
-        && obj.additional.length === 0
-    );
 
     /**
      * Performs type checking and throws errors if the
@@ -264,7 +249,7 @@ export default class Source implements ISource, IAssignable, IValidatable {
       this.additional = [];
 
       // Check if props have been provided
-      if(typeof props !== 'undefined' && props !== null) {
+      if(props) {
         if(isPlainObject(props) || props instanceof Source) {
           /*
            * If this is another Source,
@@ -278,84 +263,93 @@ export default class Source implements ISource, IAssignable, IValidatable {
           this.isSRD = !!props.isSRD;
 
           if(props.additional)
-            this.additional = [ ...props.additional ];
+            this.additional = props.additional.map(this.createAdditional);
         } else {
           console.warn(`Attempting to instantiate a TextSection object with an invalid parameter. Expected either a Source object, or a plain JSON Object of properties. Instead encountered a "${typeof props}"`);
         }
       }
     }
 
-    assign = (props:JSONObject):void => {
-      if(props.additional && props.additional && Array.isArray(props.additional)) {
-        this.additional = props.additional.map((ent:any) => {
-          if(!isPlainObject(ent))
-            return null;
+    createAdditional = (props:JSONObject):IAdditionalSource => {
+      const obj = {
+        publicationID: PublicationID.HB,
+        title: 'Unknown Source',
+        page: 0,
+        isUA: false,
+        isSRD: false,
+      };
 
-          const obj = {
-            publicationID: PublicationID.HB,
-            title: 'Unknown Source',
-            page: 0,
-            isUA: false,
-            isSRD: false,
-          };
+      if(isPlainObject(props)) {
+        Source.strictValidatePropsAdditional(props);
 
-          if(props.publicationID && typeof props.publicationID === 'string' && publicationIDHas(props.publicationID))
-            obj.publicationID = props.publicationID as PublicationID;
-          else
-            return null;
-
-          if(props.title && typeof props.title === 'string' && props.title.length > 0)
-            obj.title = props.title;
-          else
-            return null;
-
-          if(props.page && typeof props.page === 'number' && testIfPositiveInteger(props.page))
-            obj.page = props.page as number;
-                
-          if(props.isUA && typeof props.isUA === 'boolean')
-            obj.isUA = !!props.isUA;
-
-          if(props.isSRD && typeof props.isSRD === 'boolean')
-            obj.isSRD = !!props.isSRD;
-
-          return obj as IAdditionalSource;
-        }).filter((ent:IAdditionalSource|null) => (ent && ent !== null)) as Array<IAdditionalSource>;
+        obj.publicationID = props.publicationID as PublicationID;
+        obj.title = props.title as string;
+        obj.page = props.page as number;
+        obj.isUA = !!props.isUA;
+        obj.isSRD = !!props.isSRD;
       }
-    }
 
-    validate = ():Array<string> => {
-      const errs:Array<string> = [];
+      return obj as IAdditionalSource;
+    };
 
-      if(!publicationIDHas(this.publicationID))
-        errs.push(`Source publicationID is not a valid enum.`);
-        
-      if(this.title.length === 0)
-        errs.push(`Source title must be a non-empty string.`);
+    validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+      const errs:ValidationErrors = this.validateSync();
 
-      if(this.page < 0)
-        errs.push(`Source page must be a positive (0 and above) integer.`);
-      else if(Number.isInteger(this.page))
-        errs.push(`Source page cannot be a fraction, must be an integer.`);
+      if(this.additional && Array.isArray(this.additional)) {
+        const proms = this.additional.map(this.validateAdditional);
 
-      this.additional.forEach((ent:IAdditionalSource, ind:number) => {
-        if(!publicationIDHas(ent.publicationID))
-          errs.push(`Source additional[${ind}] publicationID is not a valid enum.`);
-            
-        if(ent.title.length === 0)
-          errs.push(`Source additional[${ind}] title must be a non-empty string.`);
+        // Run each validation async using Promise.all
+        Promise.all(proms).then((promErrs:Array<ValidationErrors>) => {
+          // Take each promise's results and get ready to map them
+          promErrs.forEach((resErrs:ValidationErrors, ind:number) => {
+            /*
+             * Iterate the individual results and conform them to better 
+             * error messages
+             */
+            const indErrs:ValidationErrors = resErrs.map((err:string) => `Source.additional[${ind}] ${err}`);
+            errs.push(...indErrs);
+          });
 
-        if(ent.page) {
-          if(ent.page < 0)
-            errs.push(`Source additional[${ind}] page must be a positive (0 and above) integer.`);
-          else if(Number.isInteger(ent.page))
-            errs.push(`Source additional[${ind}] page cannot be a fraction, must be an integer.`);
-        }
-      });
+          // All errors should be accounted for, return now
+          resolve(errs);
+        });
+      } else {
+        // There are no additionals, so go ahead and return
+        resolve(errs);
+      }
+    });
+
+    validateSync = ():ValidationErrors => {
+      const errs:ValidationErrors = [];
+
+      validateEnum(errs, 'Source', 'publicationID', this.publicationID, PublicationID);
+      validateString(errs, 'Source', 'title', this.title);
+      validateInteger(errs, 'Source', 'page', this.page, { positive: true }, true);
+      validateBoolean(errs, 'Source', 'isUA', this.isUA, true);
+      validateBoolean(errs, 'Source', 'isSRD', this.isSRD, true);
+
+      validateArrayOfObjects(errs, 'Source', 'additional', this.additional, this.validateAdditionalSync, true);
 
       return errs;
-    }
+    };
 
-    isValid = ():boolean => (this.validate().length === 0);
+    validateAdditional = (obj:IAdditionalSource):PromiseValidation => new Promise<ValidationErrors>(resolve => {
+      resolve(this.validateAdditionalSync(obj));
+    });
 
-    isZeroValue = ():boolean => (Source.isZeroValue(this));
+    validateAdditionalSync = (obj:IAdditionalSource):ValidationErrors => {
+      const errs:ValidationErrors = [];
+
+      validateEnum(errs, 'Source::Additional', 'publicationID', obj.publicationID, PublicationID);
+      validateString(errs, 'Source::Additional', 'title', obj.title);
+      validateInteger(errs, 'Source::Additional', 'page', obj.page, { positive: true }, true);
+      validateBoolean(errs, 'Source::Additional', 'isUA', obj.isUA, true);
+      validateBoolean(errs, 'Source::Additional', 'isSRD', obj.isSRD, true);
+      
+      return errs;
+    };
+
+    isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
+
+    isValidSync = ():boolean => (this.validateSync().length === 0);
 }

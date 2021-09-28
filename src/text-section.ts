@@ -3,12 +3,16 @@
  * See "LICENSE" in the root project folder.
  */
 import {
-  IAssignable,
   IValidatable,
-  JSONObject,
+  PromiseValidation,
+  ValidationErrors,
 } from './interfaces';
 
-import { isPlainObject, inPlaceConcat } from './utils';
+import {
+  isPlainObject,
+  validateString,
+  validateObject,
+} from './utils';
 
 import {
   strictValidatePropsParameter,
@@ -47,23 +51,7 @@ export interface ITextSection {
  * 
  * Schema: /text-section.schema.json
  */
-export default class TextSection implements ITextSection, IAssignable, IValidatable {
-    /**
-     * Holds the "Zero" value (empty, null) for easy reference
-     * and object instantiation.
-     */
-    public static readonly ZERO_VALUE:TextSection = new TextSection();
-
-    /**
-     * Checks if the supplied object is at the class's zero value.
-     * @param obj TextSection object to check
-     * @returns True if the object has the default values
-     */
-    public static isZeroValue = (obj:TextSection):boolean => !!(
-      obj.title.length === 0
-        && obj.body.isZeroValue()
-    );
-
+export default class TextSection implements ITextSection, IValidatable {
     /**
      * Performs type checking and throws errors if the
      * properties needed are not the right types.
@@ -96,8 +84,9 @@ export default class TextSection implements ITextSection, IAssignable, IValidata
       this.body = new TextBlock();
 
       // Check if props have been provided
-      if(typeof props !== 'undefined' && props !== null) {
+      if(props) {
         if(isPlainObject(props) || props instanceof TextSection) {
+          // Copy the properties from the other object
           TextSection.strictValidateProps(props);
           this.title = props.title;
           this.body = new TextBlock(props.body);
@@ -107,32 +96,20 @@ export default class TextSection implements ITextSection, IAssignable, IValidata
       }
     }
 
-    assign = (props:JSONObject):void => {
-      if(props.title && typeof props.title === 'string')
-        this.title = props.title;
+    validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+      resolve(this.validateSync());
+    });
 
-      if(props.body && isPlainObject(props.body)) {
-        // The IsPlainObject() function satisfies type checking for us
-        this.body.assign(props.body as JSONObject);
-      }
-    }
+    validateSync = ():ValidationErrors => {
+      const errs:ValidationErrors = [];
 
-    validate = ():Array<string> => {
-      const errs:Array<string> = [];
-
-      if(!this.title || typeof this.title !== 'string')
-        errs.push(`TextSection.title is expected to be a string, instead found "${typeof this.title}".`);
-
-      inPlaceConcat(errs, this.body.validate());
+      validateString(errs, 'TextSection', 'title', this.title);
+      validateObject(errs, 'TextSection', 'body', this.body, (ent:TextBlock) => ent.validateSync().map((err:string) => `TextSection.body -> ${err}`));
 
       return errs;
     }
 
-    isValid = ():boolean => (this.validate().length === 0);
+    isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
 
-    /**
-     * Checks if this object is at the class's zero value.
-     * @returns True if the this has the default values
-     */
-     isZeroValue = ():boolean => (TextSection.isZeroValue(this));
+    isValidSync = ():boolean => (this.validateSync().length === 0);
 }

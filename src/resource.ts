@@ -194,8 +194,8 @@ export default abstract class Resource implements IResource, IValidatable {
       this.id = 'unknown';
       this.uri = '/';
       this.name = 'Unknown Resource';
-      this.description = TextBlock.ZERO_VALUE;
-      this.source = Source.ZERO_VALUE;
+      this.description = new TextBlock();
+      this.source = new Source();
       this.tags = [];
 
       // Check if props have been provided
@@ -235,7 +235,44 @@ export default abstract class Resource implements IResource, IValidatable {
     }
 
     validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
-      resolve(this.validateSync());
+      const clsName = this.constructor.name ?? 'Resource';
+      const errs:ValidationErrors = [];
+
+      // Handle the primitives in a sync style
+      validateEnum(errs, clsName, 'type', this.type, ResourceType);
+      validateString(errs, clsName, 'id', this.id, { regexp: RegexpKabob });
+      validateString(errs, clsName, 'uri', this.uri, { regexp: RegexpURI });
+      validateString(errs, clsName, 'name', this.name);
+
+      // Validate all the tag entries
+      validateArray(errs, clsName, 'tags', this.tags, (prop:any, ind:number):ValidationErrors => {
+        const subErrs:ValidationErrors = [];
+
+        if(prop) {
+          if(typeof prop !== 'string')
+            subErrs.push(`${clsName}.tags[${ind}] is not a string type, instead found "${typeof prop}".`);
+          else if(testKabob(prop) === false)
+            subErrs.push(`${clsName}.tags[${ind}] "${prop}" does not match the kabob format.`);
+        } else {
+          subErrs.push(`${clsName}.tags[${ind}] is a required string.`);
+        }
+
+        return subErrs;
+      });
+
+      // Validate the description async first
+      this.description.validate().then((descErrs:ValidationErrors) => {
+        // Push the errors from description into the top level errors.
+        errs.push(...(descErrs.map((err:string) => `${clsName}.description: ${err}`)));
+
+        // Finally validate the source async
+        this.source.validate().then((srcErrs:ValidationErrors) => {
+          // Push the errors from source into the top level errors.
+          errs.push(...(srcErrs.map((err:string) => `${clsName}.source: ${err}`)));
+
+          resolve(errs);
+        });
+      });
     });
 
     validateSync = ():ValidationErrors => {
@@ -246,8 +283,8 @@ export default abstract class Resource implements IResource, IValidatable {
       validateString(errs, clsName, 'id', this.id, { regexp: RegexpKabob });
       validateString(errs, clsName, 'uri', this.uri, { regexp: RegexpURI });
       validateString(errs, clsName, 'name', this.name);
-      validateObject(errs, clsName, 'description', this.description, this.description.validate);
-      validateObject(errs, clsName, 'source', this.source, this.source.validate);
+      validateObject(errs, clsName, 'description', this.description, this.description.validateSync);
+      validateObject(errs, clsName, 'source', this.source, this.source.validateSync);
       validateArray(errs, clsName, 'tags', this.tags, (prop:any, ind:number):ValidationErrors => {
         const subErrs:ValidationErrors = [];
 

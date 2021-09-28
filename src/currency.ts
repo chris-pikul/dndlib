@@ -72,13 +72,13 @@ export default class Currency implements ICurrency {
    * The first parameter `props` can be supplied with either a Currency object,
    * a JSON object resembling a Currency object, or a number.
    * 
-   * If an object is provided, the properties will be copied into the new 
+   * If an `object` is provided, the properties will be copied into the new 
    * object, essentially a hard-copy.
    * 
-   * If a number is provided, it is treated as a Gold Value and the needed 
+   * If a `number` is provided, it is treated as a Gold Value and the needed 
    * denominations are calculated using it. The object created will have this
    * value broken down into all the denominations using Currency.fromGold().
-   * With this option, the remaining properties determine how this gold value
+   * With this option, the _remaining properties_ determine how this gold value
    * is handled. As in, should we calculate the platinum equivelents, or the
    * electrum values as well.
    * 
