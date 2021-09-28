@@ -364,6 +364,28 @@ export interface ISpell {
   enchanting ?: ISpellEnchanting;
 };
 
+/**
+ * The rules for calculating the spell scroll properties
+ */
+export type ScrollRules = {
+  rarity:Array<Rarity>,
+  attackBonus:Array<number>,
+  saveDC:Array<number>,
+  value:(spell:ISpell) => number,
+};
+
+export type RarityMap<Type> = {
+  [K in Rarity]: Type;
+};
+
+export type EnchantmentRules = {
+  rarity:Array<Rarity>,
+  minLevel:RarityMap<number>,
+  baseCost:RarityMap<number>,
+  days:RarityMap<number>,
+  calcCost:(spell:ISpell) => number,
+};
+
 export default class Spell extends Resource implements ISpell, IValidatable {
   private static readonly regexpDiceCalculation = /^[0-9]{1,2}[d][012468]{1,3}(?:\\s?\\+\\s?[0-9a-z]+)?$/i;
   
@@ -531,6 +553,122 @@ export default class Spell extends Resource implements ISpell, IValidatable {
   };
 
   /**
+   * Specifies the default rule set for calculating scroll values.
+   * These are based on the DMG and Xanthar's Guide. 
+   * 
+   * The major modification is for the value calculation. Here the values from
+   * Xanthar's have been used with a modification to the 9th level slot. The
+   * values are then added with the total material cost, and then doubled. The
+   * doubling is intented as a "labor" cost for resale. It can be denoted as:
+   * 
+   * `value = (levelBasedValue + componentCost) * 2`
+   */
+  public static readonly defaultScrollRules:ScrollRules = {
+    rarity: [
+      Rarity.COMMON,
+      Rarity.COMMON,
+      Rarity.UNCOMMON,
+      Rarity.UNCOMMON,
+      Rarity.RARE,
+      Rarity.RARE,
+      Rarity.VERY_RARE,
+      Rarity.VERY_RARE,
+      Rarity.VERY_RARE,
+      Rarity.LEGENDARY,
+    ],
+    attackBonus: [
+      5,
+      5,
+      5,
+      7,
+      7,
+      9,
+      9,
+      10,
+      10,
+      11,
+    ],
+    saveDC: [
+      13,
+      13,
+      13,
+      15,
+      15,
+      17,
+      17,
+      18,
+      18,
+      19,
+    ],
+    value: (spl:ISpell):number => {
+      const baseCost = [
+        15,
+        25,
+        250,
+        500,
+        2500,
+        5000,
+        15000,
+        25000,
+        50000,
+        100000,
+      ];
+      return ((baseCost[spl.level] + spl.components.goldValue) * 2);
+    },
+  }
+
+  /**
+   * Specifies the default rules for calculating enchantment properties.
+   * These are taken from the DMG directly. The "Artifact" rarity was added
+   * to support the Rarity enum.
+   * 
+   * Yes, that does say 109 years for an artifact.
+   */
+  public static readonly defaultEnchantmentRules:EnchantmentRules = {
+    rarity: [
+      Rarity.COMMON,
+      Rarity.COMMON,
+      Rarity.UNCOMMON,
+      Rarity.UNCOMMON,
+      Rarity.RARE,
+      Rarity.RARE,
+      Rarity.VERY_RARE,
+      Rarity.VERY_RARE,
+      Rarity.VERY_RARE,
+      Rarity.LEGENDARY,
+    ],
+    minLevel: {
+      COMMON: 3,
+      UNCOMMON: 3,
+      RARE: 6,
+      VERY_RARE: 11,
+      LEGENDARY: 17,
+      ARTIFACT: 20,
+    },
+    baseCost: {
+      COMMON: 100,
+      UNCOMMON: 500,
+      RARE: 5000,
+      VERY_RARE: 50000,
+      LEGENDARY: 500000,
+      ARTIFACT: 1000000,
+    },
+    days: {
+      COMMON: 4,
+      UNCOMMON: 20,
+      RARE: 200,
+      VERY_RARE: 2000,
+      LEGENDARY: 20000,
+      ARTIFACT: 40000,
+    },
+    calcCost: (spl:ISpell):number => {
+      const rarity = Spell.defaultEnchantmentRules.rarity[spl.level];
+      const days = Spell.defaultEnchantmentRules.days[rarity];
+      return Spell.defaultEnchantmentRules.baseCost[rarity] + (spl.components.goldValue * days);
+    },
+  }
+
+  /**
    * The base level that this spell can be cast at. This is the slot level,
    * and not character level.
    */
@@ -664,6 +802,43 @@ export default class Spell extends Resource implements ISpell, IValidatable {
     }
   }
 
+  /**
+   * Generates the scroll property values using some rules.
+   * The provided defaults are suggested by the DMG, with slight modification.
+   * 
+   * @param rules dictates a list of calculation rules
+   * @returns ISpellScroll object of the newly assigned values
+   */
+  calculateScroll = (rules:ScrollRules = Spell.defaultScrollRules):ISpellScroll => {
+    this.scroll = {
+      rarity: rules.rarity[this.level],
+      attackBonus: rules.attackBonus[this.level],
+      saveDC: rules.saveDC[this.level],
+      suggestedValue: rules.value(this),
+    };
+
+    return this.scroll;
+  };
+
+  /**
+   * Calculates and assigns the enchantment property based on this spells
+   * information. The results are returned.
+   * 
+   * @param rules dictates a list of calculation rules
+   * @returns this objects `enchanting` property after setting 
+   */
+  calculateEnchantment = (rules:EnchantmentRules = Spell.defaultEnchantmentRules):ISpellEnchanting => {
+    const rarity = rules.rarity[this.level];
+
+    this.enchanting = {
+      minLevel: rules.minLevel[rarity],
+      cost: rules.calcCost(this),
+      days: rules.days[rarity],
+    };
+
+    return this.enchanting;
+  };
+
   validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
     super.validate().then((supErrs:ValidationErrors) => {
       /*
@@ -672,6 +847,12 @@ export default class Spell extends Resource implements ISpell, IValidatable {
        * feed that into "this" version of validateSync().
        */
       resolve(this.validateSync(supErrs));
+
+      /*
+       * TODO: Move some of the logic for validation into better async versions.
+       * This may require "Sub-classes" within this one to better handle the
+       * parts within spells like Components, Damage, Healing, etc.
+       */
     });
   });
 
