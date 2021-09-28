@@ -51,12 +51,12 @@ export default class AbilityScore extends Resource implements IAbilityScore, IVa
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateProps = (props:any):void => {
-    strictValidatePropsParameter(props, 'AbilityScore');
+   protected static readonly strictValidateProps = (props:any):void => {
+     strictValidatePropsParameter(props, 'AbilityScore');
 
-    strictValidateRequiredProp(props, 'AbilityScore', 'abbreviation', 'string');
-    strictValidateOptionalArrayProp(props, 'AbilityScore', 'skills', ReferenceSkill.strictValidateProps);
-  }
+     strictValidateRequiredProp(props, 'AbilityScore', 'abbreviation', 'string');
+     strictValidateOptionalArrayProp(props, 'AbilityScore', 'skills', ReferenceSkill.strictValidateProps);
+   }
   
   /**
    * A 3-letter string representing the the short-form abbreviation.

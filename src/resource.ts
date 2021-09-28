@@ -113,7 +113,7 @@ export default abstract class Resource implements IResource, IValidatable {
      * @throws TypeErrors for invalid properties
      * @param props Incoming properties object
      */
-    public static strictValidateProps = (props:any):void => {
+    protected static strictValidateProps = (props:any):void => {
       strictValidatePropsParameter(props, 'Resource');
 
       strictValidateRequiredProp(props, 'Resource', 'type', 'string');

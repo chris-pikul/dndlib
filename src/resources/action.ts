@@ -93,7 +93,7 @@ export interface IAction {
  * Schema: /action.schema.json
  */
 export default class Action extends Resource implements IAction, IValidatable {
-  public static readonly strictValidateProps = (props:any):void => {
+  protected static readonly strictValidateProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Action');
 
     strictValidateRequiredProp(props, 'Action', 'isVariant', 'boolean');
@@ -101,7 +101,7 @@ export default class Action extends Resource implements IAction, IValidatable {
     strictValidateRequiredObjectProp(props, 'Action', 'timing', Action.strictValidateTimingProps);
   };
 
-  public static readonly strictValidateTimingProps = (props:any):void => {
+  protected static readonly strictValidateTimingProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Action::Timing');
 
     strictValidateRequiredProp(props, 'Action::Timing', 'type', 'string');

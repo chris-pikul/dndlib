@@ -398,7 +398,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateProps = (props:any):void => {
+  protected static readonly strictValidateProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell');
 
     strictValidateRequiredProp(props, 'Spell', 'level', 'number');
@@ -429,7 +429,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateRangeProps = (props:any):void => {
+  private static readonly strictValidateRangeProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Range');
 
     strictValidateRequiredProp(props, 'Spell::Range', 'type', 'string');
@@ -446,7 +446,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateComponentsProps = (props:any):void => {
+  private static readonly strictValidateComponentsProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Components');
 
     strictValidateRequiredProp(props, 'Spell::Components', 'verbal', 'boolean');
@@ -466,7 +466,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateDamageProps = (props:any):void => {
+  private static readonly strictValidateDamageProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Damage');
 
     strictValidateRequiredObjectProp(props, 'Spell::Damage', 'type', ReferenceDamageType.strictValidateProps);
@@ -486,7 +486,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateSaveProps = (props:any):void => {
+  private static readonly strictValidateSaveProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Save');
 
     strictValidateRequiredObjectProp(props, 'Spell::Save', 'ability', ReferenceAbilityScore.strictValidateProps);
@@ -505,7 +505,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateAreaOfEffectProps = (props:any):void => {
+  private static readonly strictValidateAreaOfEffectProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::AreaOfEffect');
 
     strictValidateRequiredProp(props, 'Spell::AreaOfEffect', 'shape', 'string');
@@ -524,7 +524,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateScrollProps = (props:any):void => {
+  private static readonly strictValidateScrollProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Scroll');
 
     strictValidateRequiredProp(props, 'Spell::Scroll', 'rarity', 'string');
@@ -543,7 +543,7 @@ export default class Spell extends Resource implements ISpell, IValidatable {
    * @throws TypeErrors for invalid properties
    * @param props Incoming properties object
    */
-  public static readonly strictValidateEnchantingProps = (props:any):void => {
+  private static readonly strictValidateEnchantingProps = (props:any):void => {
     strictValidatePropsParameter(props, 'Spell::Enchanting');
 
     strictValidateRequiredProp(props, 'Spell::Enchanting', 'minLevel', 'number');
