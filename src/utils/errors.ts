@@ -100,12 +100,32 @@ export const strictValidateRequiredArrayProp = (
     throw makeStrictValidateWrongType(className, propName, 'array', typeof props[propName]);
 
   if(typeof arrValidation === 'string') {
+    // Here we are only doing typeof validation with a string
     (props[propName] as Array<any>).forEach((ent:any, ind:number) => {
       if(typeof ent !== arrValidation)
         throw makeStrictValidateArrayWrongType(className, propName, ind, arrValidation, typeof ent);
     });
   } else {
-    (props[propName] as Array<any>).forEach(arrValidation);
+    (props[propName] as Array<any>).forEach((ent:any, ind:number) => {
+      /*
+       * Wrap the validation with a Try/Catch so we can throw within this
+       * validation callback. We will reformat the message for better describe
+       * the root class, prop name, and index
+       */
+      try {
+        arrValidation(ent, ind);
+      } catch (err:unknown) {
+        let msg:string;
+        if(typeof err === 'string')
+          msg = err;
+        else if(err instanceof Error)
+          msg = err.message;
+        else
+          msg = 'Unknown error';
+
+        throw new Error(`${className}.${propName}[${ind}] ${msg}`);
+      }
+    });
   }
 };
 
