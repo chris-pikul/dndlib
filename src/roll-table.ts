@@ -8,7 +8,7 @@ import {
   ValidationErrors,
 } from './interfaces';
 
-import { DieSize } from './die-size';
+import { DieSizes, EDieSize } from './die-size';
 import TextBlock from './text-block';
 
 import {
@@ -187,7 +187,7 @@ export class RollTableEntry implements IRollTableEntry, IValidatable {
  * Schema: /roll-table.schema.json
  */
 export interface IRollTable {
-    die : DieSize
+    die : EDieSize
 
     results : Array<IRollTableEntry>
 };
@@ -218,7 +218,7 @@ export default class RollTable implements IRollTable, IValidatable {
     /**
      * The size of the die that should be used to roll on this table.
      */
-    readonly die : DieSize;
+    readonly die : EDieSize;
 
     /**
      * An array of RollTableEntry objects, used to map the results.
@@ -227,7 +227,7 @@ export default class RollTable implements IRollTable, IValidatable {
     results : Array<RollTableEntry>;
 
     constructor(props?:any) {
-      this.die = DieSize.UNKNOWN;
+      this.die = DieSizes.UNKNOWN;
       this.results = [];
 
       // Check if props have been provided
@@ -250,7 +250,7 @@ export default class RollTable implements IRollTable, IValidatable {
     validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
       const errs:ValidationErrors = [];
 
-      validateEnum(errs, 'RollTable', 'die', this.die, DieSize);
+      validateEnum(errs, 'RollTable', 'die', this.die, DieSizes);
 
       if(this.results.length === 0) {
         errs.push(`RollTable.results should not be empty.`);
@@ -279,7 +279,7 @@ export default class RollTable implements IRollTable, IValidatable {
     validateSync = ():ValidationErrors => {
       const errs:ValidationErrors = [];
 
-      validateEnum(errs, 'RollTable', 'die', this.die, DieSize);
+      validateEnum(errs, 'RollTable', 'die', this.die, DieSizes);
       
       if(this.results.length === 0)
         errs.push(`RollTable.results should not be empty.`);
