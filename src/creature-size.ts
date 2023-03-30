@@ -12,41 +12,42 @@ import { enumHas } from './utils/enums';
  * 
  * This maps to the scema "/size.schema.json"
  */
-export enum CreatureSize {
-    UNKNOWN = 'UNKNOWN',
+export const CreatureSizes = {
+  UNKNOWN: 'UNKNOWN',
 
-    /**
-     * Roughly 2.5 x 2.5 feet
-     */
-    TINY = 'TINY',
+  /**
+   * Roughly 2.5 x 2.5 feet
+   */
+  TINY: 'TINY',
 
-    /**
-     * Roughly under 5 x 5 feet
-     */
-    SMALL = 'SMALL',
+  /**
+   * Roughly under 5 x 5 feet
+   */
+  SMALL: 'SMALL',
 
-    /**
-     * Roughly around 5 x 5 feet
-     */
-    MEDIUM = 'MEDIUM',
+  /**
+   * Roughly around 5 x 5 feet
+   */
+  MEDIUM: 'MEDIUM',
 
-    /**
-     * Roughly 10 x 10 feet
-     */
-    LARGE = 'LARGE',
+  /**
+   * Roughly 10 x 10 feet
+   */
+  LARGE: 'LARGE',
 
-    /**
-     * Roughly 15 x 15 feet
-     */
-    HUGE = 'HUGE',
+  /**
+   * Roughly 15 x 15 feet
+   */
+  HUGE: 'HUGE',
 
-    /**
-     * Roughly 20 x 20 feet or larger
-     */
-    GARGANTUAN = 'GARGANTUAN',
-};
+  /**
+   * Roughly 20 x 20 feet or larger
+   */
+  GARGANTUAN: 'GARGANTUAN',
+} as const;
+export type ECreatureSize = typeof CreatureSizes[keyof typeof CreatureSizes];
 
-export const creatureSizeHas = (key:string):boolean => enumHas(CreatureSize, key);
+export const creatureSizeHas = (key:string):boolean => enumHas(CreatureSizes, key);
 
 /**
  * Get's the suggested width of a given side for a creature size in feet.
@@ -56,18 +57,18 @@ export const creatureSizeHas = (key:string):boolean => enumHas(CreatureSize, key
  * @param size Given creature size
  * @returns Number representing a single sides suggested width in feet
  */
-export const creatureSizeAsFeet = (size:CreatureSize):number => {
+export const creatureSizeAsFeet = (size:ECreatureSize):number => {
   switch(size) {
-    case CreatureSize.TINY:
+    case CreatureSizes.TINY:
       return 2.5;
-    case CreatureSize.SMALL:
-    case CreatureSize.MEDIUM:
+    case CreatureSizes.SMALL:
+    case CreatureSizes.MEDIUM:
       return 5;
-    case CreatureSize.LARGE:
+    case CreatureSizes.LARGE:
       return 10;
-    case CreatureSize.HUGE:
+    case CreatureSizes.HUGE:
       return 15;
-    case CreatureSize.GARGANTUAN:
+    case CreatureSizes.GARGANTUAN:
       return 20;
     default:
       return 0;
