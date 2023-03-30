@@ -2,7 +2,7 @@
  * Copyright(C) 2021 Chris Pikul. Under MIT license. 
  * See "LICENSE" in the root project folder.
  */
-import { enumHas, isPlainObject, StringEnum } from './utils';
+import { enumHas, isPlainObject } from './utils';
 
 /**
  * Holds enumerated values for alignment
