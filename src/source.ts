@@ -10,7 +10,6 @@ import {
 } from './interfaces';
 
 import {
-  StringEnum,
   enumHas,
   isPlainObject,
   validateEnum,
@@ -30,34 +29,35 @@ import {
 /**
  * Enumeration of the standard Publication IDs
  */
-export enum PublicationID {
+export const PublicationIDs = {
   
   // Homebrew
-  HB = 'HB',
+  HB: 'HB',
 
   // Unearthed Arcana
-  UA = 'UA',
+  UA: 'UA',
 
-  PHB = 'PHB',
-  MM = 'MM',
-  DMG = 'DMG',
-  SCAG = 'SCAG',
-  AL = 'AL',
-  VGM = 'VGM',
-  XGE = 'XGE',
-  MTF = 'MTF',
-  GGR = 'GGR',
-  SAC = 'SAC',
-  AI = 'AI',
-  ERLW = 'ERLW',
-  RMR = 'RMR',
-  EGW = 'EGW',
-  MOT = 'MOT',
-  IDRotF = 'IDRotF',
-  TCE = 'TCE',
-};
+  PHB: 'PHB',
+  MM: 'MM',
+  DMG: 'DMG',
+  SCAG: 'SCAG',
+  AL: 'AL',
+  VGM: 'VGM',
+  XGE: 'XGE',
+  MTF: 'MTF',
+  GGR: 'GGR',
+  SAC: 'SAC',
+  AI: 'AI',
+  ERLW: 'ERLW',
+  RMR: 'RMR',
+  EGW: 'EGW',
+  MOT: 'MOT',
+  IDRotF: 'IDRotF',
+  TCE: 'TCE',
+} as const;
+export type EPublicationID = typeof PublicationIDs[keyof typeof PublicationIDs];
 
-export const publicationIDHas = (key:string):boolean => enumHas(PublicationID, key);
+export const publicationIDHas = (key:string):boolean => enumHas(PublicationIDs, key);
 
 /**
  * Used to describe an additonal source (outside of the primary)
@@ -70,7 +70,7 @@ export interface IAdditionalSource {
      * used as an enum.
      * REQUIRED
      */
-    readonly publicationID : PublicationID | string;
+    readonly publicationID : EPublicationID | string;
 
     /**
      * The real publication name, as displayed to the user.
@@ -107,7 +107,7 @@ export interface ISource {
      * used as an enum.
      * REQUIRED
      */
-    readonly publicationID : PublicationID | string;
+    readonly publicationID : EPublicationID | string;
 
     /**
      * The real publication name, as displayed to the user.
@@ -147,7 +147,7 @@ export default class Source implements ISource, IValidatable {
      * A string-string map of publication ID enums to their respective 
      * human-readable titles.
      */
-    public static readonly PublicationMap:StringEnum = {
+    public static readonly PublicationMap:Record<EPublicationID, string> = {
       HB: 'Homebrew',
       UA: 'Unearthed Arcana',
     
@@ -168,7 +168,7 @@ export default class Source implements ISource, IValidatable {
       MOT: 'Mythic Odysseys of Theros',
       IDRotF: 'Icewind Dale: Rime of the Frostmaiden',
       TCE: "Tasha's Cauldron of Everything",
-    };
+    } as const;
 
     /**
      * Retrieves the full publication title from a given ID Enum.
@@ -176,7 +176,7 @@ export default class Source implements ISource, IValidatable {
      * @param publicationID Publication ID Enum
      * @returns The full publication title string
      */
-    public static getPublicationTitle = (publicationID:PublicationID):string => (Source.PublicationMap[publicationID as string] || 'Unknown');
+    public static getPublicationTitle = (publicationID:EPublicationID):string => (Source.PublicationMap[publicationID as string] || 'Unknown');
 
     /**
      * Performs type checking and throws errors if the
@@ -212,7 +212,7 @@ export default class Source implements ISource, IValidatable {
      * used as an enum.
      * REQUIRED
      */
-    readonly publicationID : PublicationID | string;
+    readonly publicationID : EPublicationID | string;
 
     /**
      * The real publication name, as displayed to the user.
@@ -241,7 +241,7 @@ export default class Source implements ISource, IValidatable {
     additional : Array<IAdditionalSource>;
 
     constructor(props?:any) {
-      this.publicationID = PublicationID.HB;
+      this.publicationID = PublicationIDs.HB;
       this.title = 'Unknown Source';
       this.page = 0;
       this.isUA = false;
@@ -271,8 +271,8 @@ export default class Source implements ISource, IValidatable {
     }
 
     createAdditional = (props:JSONObject):IAdditionalSource => {
-      const obj = {
-        publicationID: PublicationID.HB,
+      const obj:Record<string, unknown> = {
+        publicationID: PublicationIDs.HB,
         title: 'Unknown Source',
         page: 0,
         isUA: false,
@@ -282,14 +282,14 @@ export default class Source implements ISource, IValidatable {
       if(isPlainObject(props)) {
         Source.strictValidatePropsAdditional(props);
 
-        obj.publicationID = props.publicationID as PublicationID;
+        obj.publicationID = props.publicationID as EPublicationID;
         obj.title = props.title as string;
         obj.page = props.page as number;
         obj.isUA = !!props.isUA;
         obj.isSRD = !!props.isSRD;
       }
 
-      return obj as IAdditionalSource;
+      return obj as unknown as IAdditionalSource;
     };
 
     validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
@@ -322,7 +322,7 @@ export default class Source implements ISource, IValidatable {
     validateSync = ():ValidationErrors => {
       const errs:ValidationErrors = [];
 
-      validateEnum(errs, 'Source', 'publicationID', this.publicationID, PublicationID);
+      validateEnum(errs, 'Source', 'publicationID', this.publicationID, PublicationIDs);
       validateString(errs, 'Source', 'title', this.title);
       validateInteger(errs, 'Source', 'page', this.page, { positive: true }, true);
       validateBoolean(errs, 'Source', 'isUA', this.isUA, true);
@@ -340,7 +340,7 @@ export default class Source implements ISource, IValidatable {
     validateAdditionalSync = (obj:IAdditionalSource):ValidationErrors => {
       const errs:ValidationErrors = [];
 
-      validateEnum(errs, 'Source::Additional', 'publicationID', obj.publicationID, PublicationID);
+      validateEnum(errs, 'Source::Additional', 'publicationID', obj.publicationID, PublicationIDs);
       validateString(errs, 'Source::Additional', 'title', obj.title);
       validateInteger(errs, 'Source::Additional', 'page', obj.page, { positive: true }, true);
       validateBoolean(errs, 'Source::Additional', 'isUA', obj.isUA, true);
