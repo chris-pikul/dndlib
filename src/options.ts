@@ -3,9 +3,30 @@
  * See "LICENSE" in the root project folder.
  */
 // IMPORTANT NOTE: This should be changed over to classes
-import { JSONObject, JSONValue } from './interfaces/json';
+import type {
+  IValidatable,
+  PromiseValidation,
+  ValidationErrors,
+  JSONObject,
+  JSONValue,
+} from './interfaces';
 
-import { isPlainObject, testIfPositiveInteger } from './utils';
+import {
+  flattenArray,
+  inPlaceConcat,
+  isPlainObject,
+  validateArray,
+  validateBoolean,
+  validateInteger,
+} from './utils';
+
+import {
+  strictValidateOptionalArrayProp,
+  strictValidateOptionalProp,
+  strictValidatePropsParameter,
+  strictValidateRequiredArrayProp,
+  strictValidateRequiredProp,
+} from './utils/errors';
 
 /**
  * Provides an alotment of choices that may be
@@ -48,7 +69,7 @@ export interface IOptions<Type> {
      * 
      * @see IOptions definition for an example
      */
-    choices ?: Array<Type>
+    choices ?: Array<Type>;
 
     /**
      * NOTE: Remember what this was for.
@@ -56,44 +77,84 @@ export interface IOptions<Type> {
      * usage with "categories" or generic items such
      * as "melee weapon" meaning any within the category.
      */
-    fromAny ?: boolean
+    fromAny ?: boolean;
 }
 
-/**
- * Easy to reference object for empty or "null" data.
- */
-export const NullOptions:IOptions<any> = {
-  amount: 0,
-  choices: [],
-  fromAny: false,
-};
+export default class Options<Type> implements IValidatable {
+  public static readonly strictValidateProps = (props:any):void => {
+    strictValidatePropsParameter(props, 'Options');
 
-/**
- * Factory function for creating an Options object
- * from the given JSON object.
- * 
- * This does not ensure that the Types of the options
- * conforms, it only insures they are valid objects.
- * 
- * @param input JSONObject
- * @returns Options
- */
-export function makeOptions<Type>(input:JSONObject):IOptions<Type> {
-  if(!isPlainObject(input))
-    return NullOptions;
+    strictValidateRequiredProp(props, 'Options', 'amount', 'number');
+    strictValidateOptionalArrayProp(props, 'Options', 'choices', (ent:any) => {
+      if(!Array.isArray(ent))
+        throw new TypeError(`First level of Options.choices must be Arrays. Instead encounted "${typeof ent}".`);
+    });
+    strictValidateOptionalProp(props, 'Options', 'fromAny', 'boolean');
+  }
 
-  const obj:IOptions<Type> = NullOptions;
+  /**
+   * The amount of objects that may be chosen from
+   * the "choices" array.
+   */
+  amount : number;
 
-  if(input.amount && testIfPositiveInteger(input.amount))
-    obj.amount = input.amount as number;
+  /**
+   * The available choices, each index in the parent
+   * array being a single choice. It's child objects
+   * being treated as an "OR" statement within the
+   * sub-array.
+   * 
+   * @see IOptions definition for an example
+   */
+  choices ?: Array<Type>;
 
-  if(input.choices !== null && Array.isArray(input.choices))
-    obj.choices = input.choices.filter(ent => (ent && isPlainObject(ent))) as unknown as Array<Type>;
-    
-  if(input.fromAny && typeof input.fromAny === 'boolean')
-    obj.fromAny = !!input.fromAny;
+  /**
+   * NOTE: Remember what this was for.
+   * My guess is, I was planning on this being for
+   * usage with "categories" or generic items such
+   * as "melee weapon" meaning any within the category.
+   */
+  fromAny ?: boolean;
 
-  return obj;
+  constructor(props?:any) {
+    if(props) {
+      if(isPlainObject(props) || props instanceof Options) {
+        Options.strictValidateProps(props);
+
+        this.amount = props.amount;
+
+        if(props.choices)
+          this.choices = [ ...props.choices ];
+
+        if(props.fromAny)
+          this.fromAny = !!props.fromAny;
+      } else {
+        console.warn(`Attempting to instantiate an Options object with an invalid parameter. Expected either an Options object, or JSON object of properties. Instead encountered a "${typeof props}".`);
+      }
+    }
+  }
+
+  validate = ():PromiseValidation => new Promise<ValidationErrors>(resolve => {
+    resolve(this.validateSync());
+  });
+
+  validateSync = ():ValidationErrors => {
+    const errs:ValidationErrors = [];
+
+    validateInteger(errs, 'Options', 'amount', this.amount, { positive: true });
+    validateArray(errs, 'Options', 'choices', this.choices, (ent:any, ind:number):ValidationErrors => {
+      if(!Array.isArray(ent))
+        return [ `Options.choices[${ind}] should be an array, instead found "${typeof ent}".` ];
+      return [];
+    }, true);
+    validateBoolean(errs, 'Options', 'fromAny', this.fromAny, true);
+
+    return errs;
+  };
+
+  isValid = async():Promise<boolean> => ((await this.validate()).length === 0);
+
+  isValidSync = ():boolean => (this.validateSync().length === 0);
 }
 
 /**
@@ -102,7 +163,7 @@ export function makeOptions<Type>(input:JSONObject):IOptions<Type> {
  * choices that combine to build the "loadout".
  * Ex. 2 weapons, 3 trinkets, 1 magic item, etc.
  */
-export type OptionsArray<Type> = Array<IOptions<Type>>
+export type OptionsArray<Type> = Array<Options<Type>>
 
 /**
  * Easy to reference object for empty or "null" data.
@@ -119,6 +180,67 @@ export function makeOptionsArray<Type>(input:JSONValue):OptionsArray<Type> {
   if(input === null || typeof input !== 'object' || !Array.isArray(input))
     return NullOptionsArray;
 
-  return input.map((ent:any) => makeOptions<Type>(ent))
+  return input.map((ent:any) => new Options<Type>(ent))
     .filter((ent:IOptions<Type>) => (ent && ent.amount !== 0));
+}
+
+export function strictValidateOptionsArray<Type>(input:OptionsArray<Type>, optPrefix?:string):void {
+  if(Array.isArray(input)) {
+    input.forEach((ent:Options<Type>, ind:number) => {
+      if(ent instanceof Options) {
+        try {
+          Options.strictValidateProps(ent);
+        } catch (err:any) {
+          let msg:string;
+          if(typeof err === 'string')
+            msg = err;
+          else if(err instanceof Error)
+            msg = err.message;
+          else
+            msg = 'Unknown error';
+
+          throw new TypeError(`${optPrefix ?? 'OptionsArray'}[${ind}] ${msg}`);
+        }
+      } else {
+        throw new TypeError(`${optPrefix ?? 'OptionsArray'}[${ind}] Entry must be made of Options objects. Instead found "${typeof ent}".`);
+      }
+    });
+  }
+  throw new TypeError(`${optPrefix ?? 'OptionsArray'}.strictValidateProps() requires a valid Array input. Instead found "${typeof input}".`);
+}
+
+export function validateOptionsArray<Type>(input:OptionsArray<Type>):PromiseValidation {
+  return new Promise<ValidationErrors>(resolve => {
+    if(Array.isArray(input) === false) {
+      resolve([ `OptionsArray must be an array, instead found "${typeof input}".` ]);
+    } else {
+      const proms = input.map((ent:Options<Type>, ind:number):PromiseValidation => {
+        if(ent instanceof Options || typeof (ent as JSONObject).validateSync === 'function')
+          return ent.validate();
+        return Promise.resolve([ `OptionsArray[${ind}] is not a validatable Object, or Options object. Instead found "${typeof ent}".` ]);
+      });
+
+      Promise.all(proms).then((promErrs:Array<ValidationErrors>) => {
+        const errs:Array<ValidationErrors> = promErrs.map((optErrs:ValidationErrors, ind:number) => (optErrs.map((err:string) => `OptionsArray[${ind}] ${err}`)));
+        resolve(flattenArray<string>(errs, 2));
+      });
+    }
+  });
+}
+
+export function validateOptionsArraySync<Type>(input:OptionsArray<Type>):ValidationErrors {
+  const errs:ValidationErrors = [];
+
+  if(Array.isArray(input) === false) {
+    errs.push(`OptionsArray must be an array, instead found "${typeof input}".`);
+  } else {
+    input.forEach((ent:Options<Type>, ind:number) => {
+      if(ent instanceof Options || typeof (ent as JSONObject).validateSync === 'function')
+        inPlaceConcat(errs, ent.validateSync());
+      else
+        errs.push(`OptionsArray[${ind}] is not a validatable Object, or Options object. Instead found "${typeof ent}".`);
+    });
+  }
+
+  return errs;
 }

@@ -13,6 +13,27 @@ export function inPlaceConcat<Type>(target:Array<Type>, ...argArr:Array<Array<Ty
   );
 }
 
+/**
+ * Attempts to flatten an array of sub-arrays into a single flat array.
+ * This is mostly a polyfill for the Array.flat() function.
+ * @param arr Parent array
+ * @param depth How far in depth should we flatten
+ * @returns New array
+ */
+export function flattenArray<Type>(arr:Array<any>, depth = 1):Array<Type> {
+  if(Array.isArray(arr) === false)
+    return [];
+
+  if(depth > 0) {
+    return arr.reduce((acc:Array<Type>, val:unknown) => {
+      if(Array.isArray(val))
+        return acc.concat(flattenArray<Type>(val, depth - 1));
+      return val;
+    }, [] as Array<Type>);
+  }
+  return arr.slice();
+};
+
 export function strictValidateCountedArrayElem(props:any, elemType?:string):void {
   if(!props || typeof props !== 'object')
     throw new TypeError(`StrictValidateCountedArrayElem requires a valid object parameter.`);
