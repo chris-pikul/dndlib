@@ -10,6 +10,7 @@
     "lint:quiet": "npx eslint ./src --quiet --ext .js,.ts",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.tests.json\" mocha --parallel -r ts-node/register tests/**/*.spec.ts",
     "coverage": "nyc npm run test",
+    "typecheck": "tsc --noEmit",
     "build": "npm run clean && npm run lint && tsc && npm run clean:postbuild"
   },
   "repository": {
@@ -33,9 +34,9 @@
   },
   "homepage": "https://github.com/chris-pikul/dndlib#readme",
   "devDependencies": {
-    "@types/chai": "^4.3.4",
+    "@types/chai": "^4.3.5",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.17.5",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.7",
