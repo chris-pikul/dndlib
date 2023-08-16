@@ -7,13 +7,12 @@ export type StringArray = string[];
  * An element of a CountedArray, uses the properties of type and number
  */
 export type CountedArrayElem<Type> = {
+    /**
+     * Enum of the type.
+     */
+    type: Type;
 
-  /**
-   * Enum of the type.
-   */
-  type : Type;
-
-  count : number;
+    count: number;
 };
 
 /**
@@ -27,15 +26,21 @@ export type CountedArray<Type> = Array<CountedArrayElem<Type>>;
 /**
  * Signature for a standard Array.forEach() callback.
  */
-export type ArrayIteratorCB = (prop:any, ind?:number) => void;
+export type ArrayIteratorCB = (prop: any, ind?: number) => void;
 
 /**
  * Signature for a standard Array.map() callback.
  */
-export type ArrayMapIteratorCB<InputType=any, ReturnType=any> = (props:InputType, ind?:number) => ReturnType;
+export type ArrayMapIteratorCB<InputType = any, ReturnType = any> = (
+    props: InputType,
+    ind?: number,
+) => ReturnType;
 
 /**
  * Signature for a finding operation like Array.find() or Array.includes()
  * callback.
  */
-export type ArrayBooleanIteratorCB<InputType=any> = (props:InputType, ind?:number) => boolean;
+export type ArrayBooleanIteratorCB<InputType = any> = (
+    props: InputType,
+    ind?: number,
+) => boolean;

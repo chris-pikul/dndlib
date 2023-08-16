@@ -2,34 +2,35 @@
 
 /**
  * Tests if the given input is a valid object member for JSON.
- * 
+ *
  * @param input Any object
  * @returns True if the input is a valid JSON object member
  */
-export const isPlainObjectMember = (input:any):boolean => {
-  if(typeof input === 'undefined')
-    return false;
+export const isPlainObjectMember = (input: any): boolean => {
+    if (typeof input === 'undefined') return false;
 
-  if(input == null)
-    return true;
+    if (input == null) return true;
 
-  switch(typeof input) {
-    case 'string':
-      return true;
-    case 'number':
-      return true;
-    case 'boolean':
-      return true;
-    case 'object':
-      if(Array.isArray(input)) {
-        // Ensure each member of the array is also a valid member
-        return input.findIndex((ent:any) => !isPlainObjectMember(ent)) === -1;
-      }
+    switch (typeof input) {
+        case 'string':
+            return true;
+        case 'number':
+            return true;
+        case 'boolean':
+            return true;
+        case 'object':
+            if (Array.isArray(input)) {
+                // Ensure each member of the array is also a valid member
+                return (
+                    input.findIndex((ent: any) => !isPlainObjectMember(ent)) ===
+                    -1
+                );
+            }
 
-      return isPlainObject(input);
-    default:
-      return false;
-  }
+            return isPlainObject(input);
+        default:
+            return false;
+    }
 };
 
 /**
@@ -44,10 +45,11 @@ export const isPlainObjectMember = (input:any):boolean => {
  * @param input Any object
  * @returns True if the input is a plain object
  */
-export const isPlainObject = (input:any):boolean => (
-  typeof input === 'object'
-    && input !== null
-    && input.constructor === Object
-    && Object.prototype.toString.call(input) === '[object Object]'
-    && (Object.keys(input).findIndex((key:any) => !isPlainObjectMember(input[key])) === -1)
-);
+export const isPlainObject = (input: any): boolean =>
+    typeof input === 'object' &&
+    input !== null &&
+    input.constructor === Object &&
+    Object.prototype.toString.call(input) === '[object Object]' &&
+    Object.keys(input).findIndex(
+        (key: any) => !isPlainObjectMember(input[key]),
+    ) === -1;
